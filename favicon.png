@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" fill="none">
+  <!-- Fundo escuro do site -->
+  <rect width="512" height="512" rx="112" fill="#0D0D0D"/>
+  
+  <!-- Borda dourada/âmbar sutil com cantos arredondados -->
+  <rect x="16" y="16" width="480" height="480" rx="96" stroke="#D98A2B" stroke-width="4" stroke-opacity="0.3"/>
+  
+  <!-- Ícone de Lista / Fila + Iniciais FLF -->
+  <g fill="#E09228">
+    <!-- Ícone de Lista Superior -->
+    <rect x="140" y="130" width="36" height="36" rx="8"/>
+    <rect x="200" y="138" width="172" height="20" rx="10"/>
+    
+    <rect x="140" y="185" width="36" height="36" rx="8"/>
+    <rect x="200" y="193" width="172" height="20" rx="10"/>
+
+    <!-- Iniciais FLF estilizadas -->
+    <!-- F -->
+    <path d="M140 270H220V300H175V330H210V360H175V410H140V270Z"/>
+    <!-- L -->
+    <path d="M235 270H270V380H315V410H235V270Z"/>
+    <!-- F -->
+    <path d="M330 270H410V300H365V330H400V360H365V410H330V270Z"/>
+  </g>
+</svg>
