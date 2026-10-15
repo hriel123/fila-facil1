@@ -59,7 +59,7 @@ A API sobe em `http://localhost:3001`. Para o site usar essa API, coloque o ende
 ### 2. Servidor (Render)
 
 1. No [Render](https://render.com), clique em **New** > **Blueprint** e escolha o repositório `hriel123/fila-facil1`.
-2. O Render lê o `render.yaml` da raiz e cria o serviço `filafacil-api`. Ele pede o valor de `DATABASE_URL`: cole o endereço do Neon.
+2. O Render lê o `render.yaml` da raiz e cria o serviço `fila-facil-api`. Ele pede o valor de `DATABASE_URL`: cole o endereço do Neon.
 3. O `JWT_SECRET` é gerado sozinho, e o `CORS_ORIGIN` já vem como `https://hriel123.github.io`.
 4. Clique em **Apply**. Quando o deploy terminar, abra `https://<nome-do-serviço>.onrender.com/health`. Deve aparecer `{"ok":true}`.
 
@@ -67,4 +67,4 @@ No plano gratuito o servidor dorme depois de 15 minutos sem uso. O primeiro aces
 
 ### 3. Ligar o site ao servidor
 
-No `app.html` e no `tv.html`, troque `<meta name="filafacil-api" content="">` pelo endereço do serviço, por exemplo `<meta name="filafacil-api" content="https://filafacil-api.onrender.com">`, e publique.
+No `app.html` e no `tv.html`, troque `<meta name="filafacil-api" content="">` pelo endereço do serviço, por exemplo `<meta name="filafacil-api" content="https://fila-facil-api.onrender.com">`, e publique.

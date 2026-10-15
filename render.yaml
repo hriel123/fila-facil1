@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: filafacil-api
+    name: fila-facil-api
     runtime: node
     region: virginia
     plan: free
