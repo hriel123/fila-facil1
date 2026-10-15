@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FilaFácil</title>
+<meta name="description" content="Entre na sua conta do FilaFácil para pegar senha pelo celular ou organizar a fila do seu negócio.">
+<meta name="filafacil-api" content="">
+<meta name="theme-color" content="#0b0d0f">
+<link rel="icon" type="image/png" sizes="512x512" href="favicon.png">
+<link rel="apple-touch-icon" href="favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="app.css">
+</head>
+<body class="app">
+
+<header class="header">
+  <div class="container header__inner">
+    <a href="index.html" class="brand">
+      <span class="brand__mark" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <circle cx="5" cy="7" r="2.4" fill="currentColor"/>
+          <circle cx="5" cy="17" r="2.4" fill="currentColor" opacity="0.55"/>
+          <path d="M11 7H20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M11 17H16" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.55"/>
+        </svg>
+      </span>
+      <span class="brand__name">FilaFácil</span>
+    </a>
+    <div class="app-user" id="appUser" hidden>
+      <span class="app-user__name" id="userName"></span>
+      <button class="btn btn--ghost btn--sm" id="btnSair" type="button">Sair</button>
+    </div>
+  </div>
+</header>
+
+<main class="app-main">
+
+  <!-- ===================== CARREGANDO ===================== -->
+  <section class="view view--center" id="vLoading">
+    <div class="loading">
+      <span class="spinner" aria-hidden="true"></span>
+      <p>Carregando…</p>
+      <p class="loading__hint" id="loadingHint" hidden>O servidor estava em repouso e está acordando. Na primeira vez isso pode levar até 1 minuto.</p>
+    </div>
+  </section>
+
+  <!-- ===================== SEM SERVIDOR ===================== -->
+  <section class="view view--center" id="vOffline" hidden>
+    <div class="notice">
+      <h1>Não foi possível conectar</h1>
+      <p id="offlineMsg">O servidor do FilaFácil não respondeu.</p>
+      <button class="btn btn--primary" id="btnRetry" type="button">Tentar de novo</button>
+    </div>
+  </section>
+
+  <!-- ===================== ENTRAR / CRIAR CONTA ===================== -->
+  <section class="view" id="vAuth" hidden>
+    <div class="auth">
+      <div class="fila-card" id="authFila" hidden>
+        <p class="fila-card__label">Você vai entrar na fila de</p>
+        <p class="fila-card__name" data-fila="name"></p>
+        <p class="fila-card__info"><span data-fila="waiting"></span> · <span data-fila="estimate"></span></p>
+      </div>
+
+      <div class="auth-card">
+        <div class="tabs" role="tablist" aria-label="Entrar ou criar conta">
+          <button class="tab is-active" role="tab" type="button" data-auth-tab="entrar" aria-selected="true">Entrar</button>
+          <button class="tab" role="tab" type="button" data-auth-tab="criar" aria-selected="false">Criar conta</button>
+        </div>
+
+        <form class="form" id="formEntrar" novalidate>
+          <h1 class="auth-card__title">Bem-vindo de volta</h1>
+          <label class="field">
+            <span class="field__label">E-mail</span>
+            <input type="email" name="email" autocomplete="email" required>
+          </label>
+          <label class="field">
+            <span class="field__label">Senha da conta</span>
+            <input type="password" name="password" autocomplete="current-password" required>
+          </label>
+          <p class="form__error" role="alert" hidden></p>
+          <button class="btn btn--primary btn--lg btn--block" type="submit">Entrar</button>
+          <p class="form__switch">Ainda não tem conta? <button type="button" class="link-btn" data-auth-tab="criar">Criar conta</button></p>
+        </form>
+
+        <form class="form" id="formCriar" novalidate hidden>
+          <h1 class="auth-card__title">Criar conta</h1>
+          <div class="role-pick" role="radiogroup" aria-label="Tipo de conta">
+            <label class="role-option">
+              <input type="radio" name="role" value="CUSTOMER" checked>
+              <span class="role-option__box">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="7" y="2.5" width="10" height="19" rx="2.5" stroke="currentColor" stroke-width="1.7"/><path d="M11 18.5h2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                <strong>Sou cliente</strong>
+                <small>Pego senha pelo celular</small>
+              </span>
+            </label>
+            <label class="role-option">
+              <input type="radio" name="role" value="OWNER">
+              <span class="role-option__box">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 10.5V20h16v-9.5M3 10.5 5 4h14l2 6.5H3Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M10 20v-5h4v5" stroke="currentColor" stroke-width="1.7"/></svg>
+                <strong>Tenho um negócio</strong>
+                <small>Organizo a minha fila</small>
+              </span>
+            </label>
+          </div>
+          <label class="field">
+            <span class="field__label">Seu nome</span>
+            <input name="name" autocomplete="name" maxlength="80" required>
+          </label>
+          <label class="field" data-owner-only hidden>
+            <span class="field__label">Nome do estabelecimento</span>
+            <input name="businessName" maxlength="60" placeholder="Ex.: Barbearia do Zé">
+          </label>
+          <label class="field">
+            <span class="field__label">E-mail</span>
+            <input type="email" name="email" autocomplete="email" required>
+          </label>
+          <label class="field">
+            <span class="field__label">Crie uma senha para a conta</span>
+            <input type="password" name="password" autocomplete="new-password" minlength="6" required>
+            <small class="field__hint">Pelo menos 6 caracteres.</small>
+          </label>
+          <p class="form__error" role="alert" hidden></p>
+          <button class="btn btn--primary btn--lg btn--block" type="submit">Criar conta</button>
+          <p class="form__switch">Já tem conta? <button type="button" class="link-btn" data-auth-tab="entrar">Entrar</button></p>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== CLIENTE: PEGAR SENHA ===================== -->
+  <section class="view view--narrow" id="vJoin" hidden>
+    <div class="fila-card fila-card--big">
+      <p class="fila-card__label">Fila de</p>
+      <h1 class="fila-card__name" data-fila="name"></h1>
+      <div class="fila-card__stats">
+        <div><strong data-fila="waitingNum">0</strong><span>pessoas aguardando</span></div>
+        <div><strong data-fila="estimateNum">0 min</strong><span>espera estimada</span></div>
+      </div>
+      <p class="fila-card__now">Chamando agora: <strong data-fila="current">—</strong></p>
+    </div>
+    <button class="btn btn--primary btn--lg btn--block" id="btnPegar" type="button">Pegar senha</button>
+    <p class="notice-line notice-line--warn" id="joinClosed" hidden>Esta fila não está recebendo senhas agora. Tente mais tarde.</p>
+    <p class="form__error" id="joinError" role="alert" hidden></p>
+    <a class="btn btn--text btn--block" href="app.html">Voltar para minhas senhas</a>
+  </section>
+
+  <!-- ===================== CLIENTE: MINHA SENHA ===================== -->
+  <section class="view view--narrow" id="vTicket" hidden>
+    <div class="my-ticket" id="myTicket" data-status="WAITING">
+      <p class="my-ticket__place" id="mtPlace"></p>
+      <p class="my-ticket__label">Sua senha</p>
+      <div class="my-ticket__code" id="mtCode">—</div>
+      <p class="my-ticket__headline" id="mtHeadline"></p>
+      <p class="my-ticket__detail" id="mtDetail"></p>
+      <div class="my-ticket__progress" id="mtProgress" aria-hidden="true"><span></span></div>
+      <div class="my-ticket__meta" id="mtMeta">
+        <div><span>Chamando agora</span><strong id="mtCurrent">—</strong></div>
+        <div><span>Espera estimada</span><strong id="mtWait">—</strong></div>
+      </div>
+    </div>
+    <div class="ticket-actions">
+      <button class="btn btn--ghost btn--block" id="btnAvisos" type="button">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 16V11a6 6 0 1 1 12 0v5l1.5 2h-15L6 16Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M10 20.5a2.2 2.2 0 0 0 4 0" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+        Ativar som e avisos
+      </button>
+      <p class="notice-line notice-line--ok" id="avisosOk" hidden>Som e avisos ativados. Deixe esta página aberta.</p>
+      <button class="btn btn--text" id="btnDesistir" type="button">Sair da fila</button>
+      <a class="btn btn--ghost btn--block" id="btnMinhas" href="app.html" hidden>Ver minhas senhas</a>
+    </div>
+    <p class="ticket-tip" id="ticketTip">Deixe esta página aberta: quando chegar a sua vez, o celular toca e vibra.</p>
+  </section>
+
+  <!-- ===================== CLIENTE: INÍCIO ===================== -->
+  <section class="view view--narrow" id="vCustomer" hidden>
+    <h1 class="page-title">Olá, <span id="custName"></span></h1>
+    <div class="cust-active" id="custActive"></div>
+    <div class="card">
+      <h2 class="card__title">Entrar em uma fila</h2>
+      <p class="card__text">Aponte a câmera do celular para o QR code do estabelecimento, ou digite o código da fila.</p>
+      <form class="code-form" id="formCodigo" novalidate>
+        <input name="code" maxlength="5" placeholder="Ex.: K7P2Q" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Código da fila" required>
+        <button class="btn btn--primary" type="submit">Ver fila</button>
+      </form>
+      <p class="form__error" role="alert" hidden></p>
+    </div>
+    <div class="card">
+      <h2 class="card__title">Suas últimas senhas</h2>
+      <ul class="hist-list" id="custHistory"></ul>
+    </div>
+  </section>
+
+  <!-- ===================== ESTABELECIMENTO ===================== -->
+  <section class="view view--wide" id="vPanel" hidden>
+    <div class="panel-head">
+      <div>
+        <p class="eyebrow">Painel de atendimento</p>
+        <h1 class="panel-head__name" id="pName"></h1>
+      </div>
+      <div class="panel-head__actions">
+        <label class="switch">
+          <input type="checkbox" id="pOpen">
+          <span class="switch__track" aria-hidden="true"></span>
+          <span class="switch__label" id="pOpenLabel">Recebendo senhas</span>
+        </label>
+        <button class="btn btn--ghost btn--sm" id="btnQr" type="button">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.8"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.8"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.8"/><path d="M14 14h3v3h-3zM18 18h3v3h-3z" fill="currentColor"/></svg>
+          QR code da fila
+        </button>
+        <a class="btn btn--ghost btn--sm" id="btnTv" target="_blank" rel="noopener">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2.5" y="4" width="19" height="13" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M8 21h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          Tela da TV
+        </a>
+      </div>
+    </div>
+
+    <p class="notice-line notice-line--warn" id="pClosedNotice" hidden>A fila está fechada: os clientes não conseguem pegar senha pelo celular.</p>
+
+    <div class="tabs tabs--panel" role="tablist" aria-label="Seções do painel">
+      <button class="tab is-active" role="tab" type="button" data-ptab="atendimento" aria-selected="true">Atendimento</button>
+      <button class="tab" role="tab" type="button" data-ptab="relatorio" aria-selected="false">Relatório do dia</button>
+      <button class="tab" role="tab" type="button" data-ptab="ajustes" aria-selected="false">Ajustes</button>
+    </div>
+
+    <!-- Atendimento -->
+    <div class="ptab" id="tabAtendimento">
+      <div class="stat-strip">
+        <div><strong id="sWaiting">0</strong><span>aguardando</span></div>
+        <div><strong id="sDone">0</strong><span>atendidos hoje</span></div>
+        <div><strong id="sWait">—</strong><span>espera média</span></div>
+        <div><strong id="sService">—</strong><span>atendimento médio</span></div>
+      </div>
+
+      <div class="panel-grid">
+        <div class="now-card" id="nowCard" data-state="idle">
+          <p class="now-card__label">Chamando agora</p>
+          <div class="now-card__code" id="nowCode">—</div>
+          <p class="now-card__name" id="nowName">Ninguém sendo atendido</p>
+          <p class="now-card__since" id="nowSince"></p>
+          <button class="btn btn--primary btn--lg btn--block" id="btnNext" type="button">Chamar próximo</button>
+          <div class="now-card__row">
+            <button class="btn btn--ghost" id="btnRecall" type="button">Chamar de novo</button>
+            <button class="btn btn--ghost" id="btnFinish" type="button">Finalizar</button>
+            <button class="btn btn--ghost" id="btnNoShow" type="button">Não veio</button>
+          </div>
+          <p class="kbd-hint">Atalho: tecla <kbd>N</kbd> chama o próximo.</p>
+        </div>
+
+        <div class="queue-card">
+          <div class="queue-card__head">
+            <h2>Na fila <span class="count-pill" id="qCount">0</span></h2>
+            <button class="btn btn--ghost btn--sm" id="btnWalkIn" type="button">+ Senha avulsa</button>
+          </div>
+          <form class="walkin" id="formWalkIn" hidden>
+            <input name="name" maxlength="60" placeholder="Nome do cliente (opcional)" aria-label="Nome do cliente (opcional)">
+            <button class="btn btn--primary btn--sm" type="submit">Gerar senha</button>
+            <button class="btn btn--text" type="button" id="btnWalkInCancel">Cancelar</button>
+          </form>
+          <ol class="q-list" id="qList"></ol>
+          <p class="q-empty" id="qEmpty">Ninguém na fila. Mostre o QR code para os clientes pegarem senha pelo celular, ou gere uma senha avulsa.</p>
+          <div class="recent" id="recentBox" hidden>
+            <h3>Últimos atendimentos</h3>
+            <ul id="recentList"></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Relatório -->
+    <div class="ptab" id="tabRelatorio" hidden>
+      <div class="report-head">
+        <label class="field field--inline">
+          <span class="field__label">Dia</span>
+          <input type="date" id="rDay">
+        </label>
+        <button class="btn btn--ghost btn--sm" id="btnCsv" type="button">Baixar planilha</button>
+      </div>
+      <div class="kpis">
+        <div><strong id="kIssued">0</strong><span>senhas emitidas</span></div>
+        <div><strong id="kDone">0</strong><span>atendidas</span></div>
+        <div><strong id="kNoShow">0</strong><span>não vieram</span></div>
+        <div><strong id="kCanceled">0</strong><span>desistiram</span></div>
+        <div><strong id="kWait">—</strong><span>espera média</span></div>
+        <div><strong id="kMaxWait">—</strong><span>maior espera</span></div>
+        <div><strong id="kService">—</strong><span>atendimento médio</span></div>
+      </div>
+      <div class="card">
+        <h2 class="card__title">Senhas por horário</h2>
+        <div class="bars" id="rChart"></div>
+      </div>
+      <div class="card">
+        <h2 class="card__title">Atendimentos</h2>
+        <div class="table-wrap">
+          <table class="r-table">
+            <thead><tr><th>Senha</th><th>Cliente</th><th>Situação</th><th>Chegou</th><th>Chamada</th><th>Espera</th><th>Atendimento</th></tr></thead>
+            <tbody id="rRows"></tbody>
+          </table>
+        </div>
+        <p class="q-empty" id="rEmpty" hidden>Nenhuma senha neste dia.</p>
+      </div>
+    </div>
+
+    <!-- Ajustes -->
+    <div class="ptab" id="tabAjustes" hidden>
+      <form class="card form" id="formAjustes" novalidate>
+        <h2 class="card__title">Dados da fila</h2>
+        <label class="field">
+          <span class="field__label">Nome do estabelecimento</span>
+          <input name="name" maxlength="60" required>
+        </label>
+        <div class="form__row">
+          <label class="field">
+            <span class="field__label">Letra da senha</span>
+            <input name="prefix" maxlength="1" required>
+            <small class="field__hint">As senhas saem como A001, A002…</small>
+          </label>
+          <label class="field">
+            <span class="field__label">Tempo por atendimento (min)</span>
+            <input name="avgMinutes" type="number" min="1" max="120" inputmode="numeric" required>
+            <small class="field__hint">Usado na estimativa até haver 3 atendimentos no dia; depois o sistema usa a média real.</small>
+          </label>
+        </div>
+        <p class="form__error" role="alert" hidden></p>
+        <button class="btn btn--primary" type="submit">Salvar</button>
+      </form>
+      <div class="card">
+        <h2 class="card__title">Link da fila</h2>
+        <p class="card__text">Código da fila: <strong class="mono" id="aCode"></strong>. Os clientes também podem digitar esse código no app.</p>
+        <div class="copy-row">
+          <input id="aLink" readonly aria-label="Link da fila">
+          <button class="btn btn--ghost btn--sm" type="button" data-copy="aLink">Copiar</button>
+        </div>
+        <p class="card__text">A numeração das senhas recomeça do 1 todo dia.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ===================== MODAL DO QR CODE ===================== -->
+<div class="modal" id="qrModal" role="dialog" aria-modal="true" aria-labelledby="qrTitle" hidden>
+  <div class="modal__box">
+    <button class="modal__close" type="button" data-close-modal aria-label="Fechar">×</button>
+    <h2 class="modal__title" id="qrTitle">QR code da fila</h2>
+    <p class="card__text">Os clientes apontam a câmera do celular para o código, criam a conta (ou entram) e pegam a senha.</p>
+    <div class="qr-box" id="qrBox"></div>
+    <div class="copy-row">
+      <input id="qrLink" readonly aria-label="Link da fila">
+      <button class="btn btn--ghost btn--sm" type="button" data-copy="qrLink">Copiar</button>
+    </div>
+    <button class="btn btn--primary btn--block" id="btnPrint" type="button">Imprimir cartaz</button>
+  </div>
+</div>
+
+<!-- Cartaz para imprimir (só aparece na impressão) -->
+<div class="poster" id="poster" aria-hidden="true">
+  <p class="poster__name" id="posterName"></p>
+  <p class="poster__title">Pegue sua senha pelo celular</p>
+  <div class="poster__qr" id="posterQr"></div>
+  <p class="poster__steps">Aponte a câmera do celular para o código, entre ou crie sua conta e toque em <strong>Pegar senha</strong>. Avisamos no celular quando for a sua vez.</p>
+  <p class="poster__code">Código da fila: <strong id="posterCode"></strong></p>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js" integrity="sha384-mZT2gIty7ZDdOGkxfP6joZcYdMW1Jvj9dRlfpTmaJAKKXTqzygtB22k7FLe+KZC1" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="api.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

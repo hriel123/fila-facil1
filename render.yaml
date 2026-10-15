@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: filafacil-api
+    runtime: node
+    region: virginia
+    plan: free
+    rootDir: backend
+    buildCommand: npm install && npm run build
+    startCommand: npm run deploy
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CORS_ORIGIN
+        value: https://hriel123.github.io

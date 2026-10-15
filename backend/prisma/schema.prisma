@@ -1,0 +1,68 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  OWNER
+  CUSTOMER
+}
+
+enum TicketStatus {
+  WAITING
+  CALLED
+  DONE
+  NO_SHOW
+  CANCELED
+}
+
+model User {
+  id            Int            @id @default(autoincrement())
+  name          String
+  email         String         @unique
+  password      String
+  role          Role
+  createdAt     DateTime       @default(now())
+  establishment Establishment?
+  tickets       Ticket[]
+}
+
+model Establishment {
+  id           Int      @id @default(autoincrement())
+  code         String   @unique
+  name         String
+  prefix       String   @default("A")
+  avgMinutes   Int      @default(5)
+  open         Boolean  @default(true)
+  nextNumber   Int      @default(1)
+  numberingDay String?
+  createdAt    DateTime @default(now())
+  ownerId      Int      @unique
+  owner        User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  tickets      Ticket[]
+}
+
+model Ticket {
+  id              Int           @id @default(autoincrement())
+  number          Int
+  code            String
+  day             String
+  status          TicketStatus  @default(WAITING)
+  guestName       String?
+  callCount       Int           @default(0)
+  createdAt       DateTime      @default(now())
+  calledAt        DateTime?
+  finishedAt      DateTime?
+  establishmentId Int
+  establishment   Establishment @relation(fields: [establishmentId], references: [id], onDelete: Cascade)
+  userId          Int?
+  user            User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@unique([establishmentId, day, number])
+  @@index([establishmentId, day, status])
+  @@index([userId, status])
+}

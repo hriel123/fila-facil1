@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FilaFácil — Tela de chamada</title>
+<meta name="filafacil-api" content="">
+<meta name="theme-color" content="#0b0d0f">
+<link rel="icon" type="image/png" sizes="512x512" href="favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0b0d0f;
+    --surface: #14181c;
+    --border: #262b31;
+    --text: #f2f3f4;
+    --text-dim: #9aa1ab;
+    --text-faint: #666d76;
+    --accent: #ffb020;
+    --accent-line: rgba(255, 176, 32, 0.35);
+    --teal: #5fd1c4;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  [hidden] { display: none !important; }
+  html, body { height: 100%; }
+  body {
+    background: radial-gradient(1200px 600px at 50% 0%, rgba(255, 176, 32, 0.08), transparent 60%), var(--bg);
+    color: var(--text);
+    font-family: "Inter", sans-serif;
+    overflow: hidden;
+  }
+  .tv { height: 100%; display: flex; flex-direction: column; padding: 3vh 3vw; gap: 3vh; }
+  .tv__top { display: flex; align-items: center; justify-content: space-between; gap: 2vw; }
+  .tv__brand { display: flex; align-items: center; gap: 0.6vw; color: var(--accent); font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: clamp(1rem, 1.6vw, 1.6rem); }
+  .tv__brand span { color: var(--text); }
+  .tv__name { font-family: "Space Grotesk", sans-serif; font-size: clamp(1.4rem, 2.8vw, 3rem); font-weight: 700; text-align: center; flex: 1; }
+  .tv__clock { font-family: "JetBrains Mono", monospace; font-size: clamp(1.2rem, 2.4vw, 2.6rem); color: var(--text-dim); }
+
+  .tv__main { flex: 1; display: grid; grid-template-columns: 1.7fr 1fr; gap: 3vw; min-height: 0; }
+  .tv__now {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border-radius: 3vw;
+    border: 2px solid var(--accent-line);
+    background: linear-gradient(170deg, #17140d, var(--surface) 60%);
+    padding: 4vh 2vw;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+  .tv__label { font-size: clamp(1rem, 2vw, 2.2rem); letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-faint); }
+  .tv__code {
+    font-family: "JetBrains Mono", monospace;
+    font-weight: 700;
+    font-size: clamp(5rem, 17vw, 20rem);
+    line-height: 1.05;
+    color: var(--accent);
+    text-shadow: 0 0 6vw rgba(255, 176, 32, 0.45);
+    letter-spacing: 0.04em;
+  }
+  .tv__hint { font-family: "Space Grotesk", sans-serif; font-size: clamp(1.2rem, 2.6vw, 3rem); font-weight: 600; color: var(--text-dim); }
+  .tv__now.is-calling { border-color: var(--teal); animation: flash 1s ease-in-out 5; }
+  .tv__now.is-calling .tv__code { color: var(--teal); text-shadow: 0 0 6vw rgba(95, 209, 196, 0.6); }
+  .tv__now.is-calling .tv__hint { color: var(--teal); }
+  @keyframes flash {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(95, 209, 196, 0); }
+    50% { box-shadow: 0 0 0 1.4vw rgba(95, 209, 196, 0.25); }
+  }
+
+  .tv__side { display: flex; flex-direction: column; gap: 3vh; min-height: 0; }
+  .tv__box { background: var(--surface); border: 1px solid var(--border); border-radius: 2vw; padding: 3vh 2vw; }
+  .tv__box-title { font-size: clamp(0.9rem, 1.5vw, 1.7rem); letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 2vh; }
+  .tv__recent { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 1.5vh 1.5vw; }
+  .tv__recent li { font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: clamp(1.6rem, 3.6vw, 4.2rem); color: var(--text-dim); }
+  .tv__recent li.is-empty { font-family: "Inter", sans-serif; font-weight: 500; font-size: clamp(1rem, 1.6vw, 1.8rem); color: var(--text-faint); grid-column: 1 / -1; }
+  .tv__join { flex: 1; display: flex; align-items: center; gap: 2vw; }
+  .tv__qr { background: #fff; border-radius: 1.2vw; padding: 1.2vw; width: clamp(110px, 13vw, 260px); flex-shrink: 0; }
+  .tv__qr svg { display: block; width: 100%; height: auto; }
+  .tv__join-title { font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: clamp(1.1rem, 2vw, 2.4rem); line-height: 1.2; }
+  .tv__join-text { color: var(--text-dim); font-size: clamp(0.9rem, 1.4vw, 1.6rem); margin-top: 1vh; }
+  .tv__waiting { margin-top: 2vh; color: var(--text-dim); font-size: clamp(1rem, 1.6vw, 1.9rem); }
+  .tv__waiting strong { font-family: "JetBrains Mono", monospace; color: var(--accent); font-size: 1.4em; }
+  .tv__closed { color: var(--text-faint); font-size: clamp(1rem, 1.6vw, 1.9rem); }
+  .tv__status {
+    position: fixed; left: 50%; bottom: 2vh; transform: translateX(-50%);
+    background: #3a1d1d; color: #fca5a5; border-radius: 999px; padding: 8px 18px; font-size: 1rem;
+  }
+
+  .tv-start {
+    position: fixed; inset: 0; z-index: 10;
+    display: grid; place-items: center; text-align: center;
+    background: rgba(11, 13, 15, 0.92);
+    padding: 24px;
+  }
+  .tv-start h2 { font-family: "Space Grotesk", sans-serif; font-size: clamp(1.6rem, 3vw, 3rem); margin-bottom: 12px; }
+  .tv-start p { color: var(--text-dim); font-size: clamp(1rem, 1.6vw, 1.6rem); margin-bottom: 28px; }
+  .tv-start__btn {
+    font: 600 clamp(1.1rem, 2vw, 2rem) "Inter", sans-serif;
+    background: var(--accent); color: #17130a;
+    border: 0; border-radius: 999px; padding: 0.8em 2.2em; cursor: pointer;
+  }
+  .tv-start__btn:focus-visible { outline: 3px solid #fff; outline-offset: 4px; }
+
+  @media (max-width: 800px), (orientation: portrait) {
+    body { overflow: auto; }
+    .tv__main { grid-template-columns: 1fr; }
+    .tv__top { flex-wrap: wrap; }
+    .tv__name { order: 3; flex-basis: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<div class="tv">
+  <header class="tv__top">
+    <div class="tv__brand">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <circle cx="5" cy="7" r="2.4" fill="currentColor"/>
+        <circle cx="5" cy="17" r="2.4" fill="currentColor" opacity="0.55"/>
+        <path d="M11 7H20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <path d="M11 17H16" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.55"/>
+      </svg>
+      <span>FilaFácil</span>
+    </div>
+    <h1 class="tv__name" id="tvName">Carregando…</h1>
+    <div class="tv__clock" id="tvClock">--:--</div>
+  </header>
+
+  <main class="tv__main">
+    <section class="tv__now" id="tvNow" aria-live="assertive">
+      <p class="tv__label">Senha chamada</p>
+      <div class="tv__code" id="tvCode">—</div>
+      <p class="tv__hint" id="tvHint">Aguardando a primeira chamada</p>
+    </section>
+    <aside class="tv__side">
+      <div class="tv__box">
+        <p class="tv__box-title">Últimas chamadas</p>
+        <ul class="tv__recent" id="tvRecent"></ul>
+      </div>
+      <div class="tv__box tv__join">
+        <div class="tv__qr" id="tvQr"></div>
+        <div>
+          <p class="tv__join-title" id="tvJoinTitle">Pegue sua senha pelo celular</p>
+          <p class="tv__join-text" id="tvJoinText">Aponte a câmera para o código</p>
+          <p class="tv__waiting"><strong id="tvWaiting">0</strong> aguardando</p>
+        </div>
+      </div>
+    </aside>
+  </main>
+  <p class="tv__status" id="tvStatus" hidden>Sem conexão. Tentando de novo…</p>
+</div>
+
+<div class="tv-start" id="tvStart">
+  <div>
+    <h2>Tela de chamada</h2>
+    <p>Toque em começar para ativar o som das chamadas e abrir em tela cheia.</p>
+    <button class="tv-start__btn" id="btnStart" type="button">Começar</button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js" integrity="sha384-mZT2gIty7ZDdOGkxfP6joZcYdMW1Jvj9dRlfpTmaJAKKXTqzygtB22k7FLe+KZC1" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="api.js"></script>
+<script src="tv.js"></script>
+</body>
+</html>
