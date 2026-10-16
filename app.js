@@ -68,6 +68,14 @@
     return `${Math.round(value)} min`;
   }
 
+  function waitText(m) {
+    if (!m) return null;
+    if (m < 60) return `~${m} min`;
+    const h = Math.floor(m / 60);
+    const r = m % 60;
+    return r ? `~${h} h ${r} min` : `~${h} h`;
+  }
+
   function hhmm(iso) {
     return iso ? new Date(iso).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }) : "—";
   }
@@ -198,9 +206,9 @@
     const values = {
       name: fila.name,
       waiting: `${people(fila.waiting)} aguardando`,
-      estimate: estimate ? `espera de ~${estimate} min` : "sem espera agora",
+      estimate: estimate ? `espera de ${waitText(estimate)}` : "sem espera agora",
       waitingNum: String(fila.waiting),
-      estimateNum: estimate ? `~${estimate} min` : "sem espera",
+      estimateNum: estimate ? waitText(estimate) : "sem espera",
       current: fila.current ? fila.current.code : "—",
     };
     document.querySelectorAll("[data-fila]").forEach((node) => {
@@ -415,7 +423,7 @@
     $("mtProgress").hidden = t.status !== "WAITING";
     if (t.status === "WAITING") {
       $("mtCurrent").textContent = t.current || "—";
-      $("mtWait").textContent = t.waitMinutes ? `~${t.waitMinutes} min` : "agora";
+      $("mtWait").textContent = waitText(t.waitMinutes) || "agora";
       const pct = maxAhead ? ((maxAhead - t.ahead + 1) / (maxAhead + 1)) * 100 : 100;
       $("mtProgress").firstElementChild.style.width = `${Math.max(8, pct)}%`;
     }
@@ -542,7 +550,7 @@
       info.append(el("strong", null, t.establishment.name));
       const line = t.status === "CALLED"
         ? "É a sua vez! Dirija-se ao atendimento."
-        : `${t.ahead === 0 ? "Você é o próximo" : `${people(t.ahead)} na sua frente`} · ${t.waitMinutes ? `~${t.waitMinutes} min` : "agora"}`;
+        : `${t.ahead === 0 ? "Você é o próximo" : `${people(t.ahead)} na sua frente`} · ${waitText(t.waitMinutes) || "agora"}`;
       info.append(el("span", null, line));
       card.append(info, el("span", "active-ticket__go", "Acompanhar ›"));
       card.addEventListener("click", () => showTicket(t.id, t));

@@ -385,6 +385,8 @@ input { font-family: inherit; }
   color: var(--text-dim);
   font-size: 1.02rem;
 }
+.link-accent { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+.link-accent:hover { color: var(--accent-strong); }
 
 .grid { display: grid; gap: 22px; }
 .grid--3 { grid-template-columns: repeat(3, 1fr); }

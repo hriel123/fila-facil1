@@ -2,52 +2,80 @@
 
 ![Página inicial do FilaFácil](docs/inicio.webp)
 
-**Site:** https://hriel123.github.io/fila-facil1/
+**Site:** https://hriel123.github.io/fila-facil1/ · **Entrar:** https://hriel123.github.io/fila-facil1/app.html
 
-Sistema simples de gestão de filas para pequenos negócios: emite senhas, mostra a fila em tempo real e chama o próximo cliente com um clique. Pensado para barbearias, salões, oficinas, lanchonetes, pequenos comércios, recepções, clínicas e eventos.
+Sistema de gestão de filas para pequenos negócios. O estabelecimento cria a conta e mostra um QR code; o cliente pega a senha pelo celular e acompanha a vez; o atendente chama o próximo com um clique, e o celular do cliente toca. Pensado para barbearias, salões, oficinas, lanchonetes, pequenos comércios, recepções, clínicas e eventos.
 
 ## Como funciona
 
-1. **Gere a senha:** o cliente recebe uma senha automaticamente.
-2. **Acompanhe a fila:** o sistema mostra quantas pessoas estão aguardando.
-3. **Chame o próximo:** o atendente chama a próxima senha com um clique.
+1. **Pegue a senha:** o cliente lê o QR code do estabelecimento, entra ou cria a conta e toca em "Pegar senha".
+2. **Acompanhe a fila:** no celular, ele vê quantas pessoas faltam e a espera estimada.
+3. **Chame o próximo:** no painel, o atendente chama a próxima senha. O celular do cliente toca e vibra, e a TV mostra o número.
+
+![Painel de atendimento](docs/painel.webp)
 
 ## Recursos
 
-- Senhas automáticas (A001, A002, ...)
-- Fila em tempo real, com quantidade de pessoas aguardando
-- Chamar o próximo e finalizar atendimento
-- Tempo estimado de espera, a partir do tempo médio por atendimento configurável
-- Histórico de atendimentos
-- Persistência local: os dados ficam salvos no navegador (`localStorage`) e continuam lá ao recarregar a página
+**Para o estabelecimento**
+
+- Painel de atendimento: chamar o próximo (ou tecla N), chamar de novo, finalizar e marcar quem não veio
+- Senha avulsa para quem chega sem celular
+- Abrir e fechar a fila para novas senhas
+- QR code da fila e cartaz pronto para imprimir
+- Tela de chamada para TV, com a senha em letras grandes, som e voz
+- Relatório do dia: senhas emitidas, atendidas, não vieram, desistências, espera média e maior espera, tempo médio de atendimento, senhas por horário e planilha (CSV)
+- Ajustes: nome, letra da senha e tempo médio por atendimento
+
+**Para o cliente**
+
+- Senha pelo celular, sem papel
+- Posição na fila e espera estimada, atualizadas sozinhas
+- Aviso de "É a sua vez!" com som, vibração e notificação
+- Sair da fila e histórico das senhas
+
+<img src="docs/celular.webp" alt="Senha do cliente no celular" width="300">
+
+A espera estimada usa o tempo médio configurado até haver 3 atendimentos no dia; depois, a média real do dia. A numeração das senhas recomeça do 1 todo dia.
+
+![Tela de chamada para TV](docs/tv.webp)
+
+Os prints do sistema usam dados de exemplo.
 
 ## Demonstração
 
-O site tem uma demonstração funcional na seção "Demonstração do FilaFácil":
+A página inicial mantém uma demonstração do painel que funciona sem conta e salva os dados só no navegador:
 
-![Demonstração da fila em uso](docs/demonstracao.webp)
+![Demonstração do painel](docs/demonstracao.webp)
 
 ## Tecnologias
 
-HTML, CSS e JavaScript puros, sem frameworks nem dependências. Hospedado no GitHub Pages.
+- **Site:** HTML, CSS e JavaScript puros, sem frameworks, no GitHub Pages
+- **API:** Node.js com Express 5, Prisma e PostgreSQL (Neon), no Render
+- **Login:** JWT e bcrypt
 
 ## Estrutura
 
 ```
-index.html   página e demonstração
-style.css    estilos
-script.js    lógica da fila (senhas, chamada, histórico, tempo estimado, localStorage)
+index.html   página de apresentação e demonstração (style.css, script.js)
+app.html     sistema: login, área do cliente e painel do estabelecimento (app.css, app.js)
+tv.html      tela de chamada para TV (tv.js)
+api.js       acesso à API, sessão e som de chamada
+sw.js        mostra a notificação "É a sua vez!"
+backend/     API: rotas, schema do Prisma e migrations (veja backend/README.md)
+render.yaml  serviço da API no Render
 *.jpg        imagens dos tipos de negócio
 docs/        imagens deste README
 ```
 
 ## Rodar localmente
 
-Basta abrir o `index.html` no navegador, ou servir a pasta:
+A página inicial e a demonstração abrem direto no navegador, ou servindo a pasta:
 
 ```bash
 python3 -m http.server 8000
 ```
+
+Para o sistema com login, suba a API e o banco seguindo o [backend/README.md](backend/README.md).
 
 ## Autor
 
