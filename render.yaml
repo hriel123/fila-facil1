@@ -17,11 +17,21 @@ services:
         generateValue: true
       - key: CORS_ORIGIN
         value: https://hriel123.github.io,https://fila-facil-app.onrender.com
+      - key: APP_URL
+        value: https://fila-facil-app.onrender.com
+      - key: SMTP_HOST
+        value: smtp.gmail.com
+      - key: SMTP_PORT
+        value: "465"
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
 
   - type: web
     name: fila-facil-app
     runtime: static
-    buildCommand: mkdir -p publico && cp index.html app.html tv.html *.js *.css *.jpg favicon.png publico/
+    buildCommand: mkdir -p publico && cp *.html *.js *.css *.jpg favicon.png publico/
     staticPublishPath: publico
     headers:
       - path: /*

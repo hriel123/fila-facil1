@@ -17,6 +17,8 @@ Servidor que guarda as contas, as filas e as senhas do FilaFácil. Há dois tipo
 | POST | `/auth/register` | todos | Cria a conta (`name`, `email`, `password`, `role`: `OWNER` ou `CUSTOMER`, e `businessName` para estabelecimento). Já devolve o token |
 | POST | `/auth/login` | todos | Devolve o token (`email`, `password`). Vale 30 dias |
 | GET | `/auth/me` | todos | Dados da conta logada |
+| POST | `/auth/forgot` | todos | Envia por e-mail um link para criar nova senha (`email`). Responde igual exista ou não a conta |
+| POST | `/auth/reset` | todos | Troca a senha com o código do link (`token`, `password`). O link vale 30 minutos e só funciona uma vez |
 | GET | `/public/:code` | página da fila e TV | Nome da fila, quantos aguardam, senha chamada e últimas chamadas. Só códigos de senha, sem nomes |
 | GET | `/tickets` | cliente | Senhas ativas (com posição e espera estimada) e histórico |
 | GET | `/tickets/:id` | cliente | Uma senha do cliente |
@@ -65,6 +67,14 @@ A API sobe em `http://localhost:3001`. Para o site usar essa API, coloque o ende
 
 No plano gratuito o servidor dorme depois de 15 minutos sem uso. O primeiro acesso depois disso leva de 30 a 60 segundos; o app mostra um aviso enquanto isso.
 
-### 3. Ligar o site ao servidor
+### 3. E-mail de recuperação de senha (Gmail)
+
+1. Na conta Google que vai enviar os e-mails, ative a **verificação em duas etapas**.
+2. Em [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords), crie uma senha de app (nome: `FilaFácil`) e copie os 16 caracteres.
+3. No Render, abra o serviço `fila-facil-api` > **Environment** e preencha `SMTP_USER` com o endereço Gmail e `SMTP_PASS` com a senha de app. `SMTP_HOST`, `SMTP_PORT` e `APP_URL` já vêm do `render.yaml`.
+
+Sem essas variáveis, o app avisa que a recuperação por e-mail ainda não foi ativada.
+
+### 4. Ligar o site ao servidor
 
 No `app.html` e no `tv.html`, troque `<meta name="filafacil-api" content="">` pelo endereço do serviço, por exemplo `<meta name="filafacil-api" content="https://fila-facil-api.onrender.com">`, e publique.

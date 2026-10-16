@@ -90,6 +90,7 @@
             <span class="field__label">Senha da conta</span>
             <input type="password" name="password" autocomplete="current-password" required>
           </label>
+          <button type="button" class="link-btn form__forgot" data-auth-tab="esqueci">Esqueci minha senha</button>
           <p class="form__error" role="alert" hidden></p>
           <button class="btn btn--primary btn--lg btn--block" type="submit">Entrar</button>
           <p class="form__switch">Ainda não tem conta? <button type="button" class="link-btn" data-auth-tab="criar">Criar conta</button></p>
@@ -134,7 +135,36 @@
           </label>
           <p class="form__error" role="alert" hidden></p>
           <button class="btn btn--primary btn--lg btn--block" type="submit">Criar conta</button>
+          <p class="form__legal">Ao criar a conta, você concorda com a <a href="privacidade.html" class="link-accent" target="_blank" rel="noopener">política de privacidade</a>.</p>
           <p class="form__switch">Já tem conta? <button type="button" class="link-btn" data-auth-tab="entrar">Entrar</button></p>
+        </form>
+
+        <form class="form" id="formEsqueci" novalidate hidden>
+          <h1 class="auth-card__title">Recuperar acesso</h1>
+          <p class="card__text">Digite o e-mail da conta. Enviamos um link para você criar uma nova senha.</p>
+          <label class="field">
+            <span class="field__label">E-mail</span>
+            <input type="email" name="email" autocomplete="email" required>
+          </label>
+          <p class="form__error" role="alert" hidden></p>
+          <p class="notice-line notice-line--ok" data-sent hidden>Se houver uma conta com esse e-mail, enviamos um link para criar uma nova senha. Ele vale 30 minutos. Olhe também a caixa de spam.</p>
+          <button class="btn btn--primary btn--lg btn--block" type="submit">Enviar link</button>
+          <p class="form__switch"><button type="button" class="link-btn" data-auth-tab="entrar">Voltar para entrar</button></p>
+        </form>
+
+        <form class="form" id="formRedefinir" novalidate hidden>
+          <h1 class="auth-card__title">Criar nova senha</h1>
+          <label class="field">
+            <span class="field__label">Nova senha</span>
+            <input type="password" name="password" autocomplete="new-password" minlength="6" required>
+            <small class="field__hint">Pelo menos 6 caracteres.</small>
+          </label>
+          <label class="field">
+            <span class="field__label">Repita a nova senha</span>
+            <input type="password" name="confirm" autocomplete="new-password" required>
+          </label>
+          <p class="form__error" role="alert" hidden></p>
+          <button class="btn btn--primary btn--lg btn--block" type="submit">Salvar nova senha</button>
         </form>
       </div>
     </div>

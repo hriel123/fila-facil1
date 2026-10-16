@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<script>if(location.hostname==="hriel123.github.io")location.replace("https://fila-facil-app.onrender.com"+location.pathname.replace(/^\/fila-facil1/,"")+location.search+location.hash);</script>
+<script>try{if(localStorage.getItem("filafacil:tema")==="claro")document.documentElement.setAttribute("data-theme","light")}catch(e){}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Política de privacidade — FilaFácil</title>
+<meta name="description" content="Quais dados o FilaFácil guarda, para que usa e como pedir correção ou exclusão.">
+<meta name="theme-color" content="#0b0d0f">
+<link rel="icon" type="image/png" sizes="512x512" href="favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  .legal { max-width: 760px; margin: 0 auto; padding: 48px 24px 88px; }
+  .legal h1 { font-size: clamp(1.9rem, 5vw, 2.6rem); margin-bottom: 8px; }
+  .legal__date { color: var(--text-faint); font-size: 0.9rem; margin-bottom: 32px; }
+  .legal h2 { font-size: 1.2rem; margin: 34px 0 10px; }
+  .legal p, .legal li { color: var(--text-dim); line-height: 1.75; }
+  .legal p + p { margin-top: 10px; }
+  .legal ul { list-style: disc; padding-left: 22px; display: flex; flex-direction: column; gap: 6px; }
+  .legal strong { color: var(--text); font-weight: 600; }
+  .legal a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+  .legal__intro { font-size: 1.05rem; }
+  .header__actions .btn { white-space: nowrap; }
+</style>
+</head>
+<body>
+
+<header class="header" id="header">
+  <div class="container header__inner">
+    <a href="index.html" class="brand">
+      <span class="brand__mark" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <circle cx="5" cy="7" r="2.4" fill="currentColor"/>
+          <circle cx="5" cy="17" r="2.4" fill="currentColor" opacity="0.55"/>
+          <path d="M11 7H20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M11 17H16" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.55"/>
+        </svg>
+      </span>
+      <span class="brand__name">FilaFácil</span>
+    </a>
+    <div class="header__actions">
+      <button class="theme-toggle" type="button" data-theme-toggle aria-label="Usar tema claro">
+        <svg class="theme-toggle__sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        <svg class="theme-toggle__moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <a href="app.html" class="btn btn--primary btn--sm">Entrar</a>
+    </div>
+  </div>
+</header>
+
+<main class="legal">
+  <h1>Política de privacidade</h1>
+  <p class="legal__date">Atualizada em 16 de outubro de 2026.</p>
+
+  <p class="legal__intro">O FilaFácil é um projeto desenvolvido por Hariel Silva Fabrício para organizar filas de atendimento. Esta página explica quais dados o sistema guarda, para que eles servem e como pedir correção ou exclusão, de acordo com a Lei Geral de Proteção de Dados (LGPD).</p>
+
+  <h2>Quais dados guardamos</h2>
+  <ul>
+    <li><strong>Conta:</strong> nome, e-mail, tipo de conta (cliente ou estabelecimento) e data de criação. A senha da conta é guardada só em forma criptografada (hash); ninguém consegue lê-la, nem nós.</li>
+    <li><strong>Estabelecimento:</strong> nome do estabelecimento, letra das senhas, tempo médio de atendimento e se a fila está aberta.</li>
+    <li><strong>Senhas da fila:</strong> número da senha, horário em que foi pega, chamada e finalizada, situação (atendida, não veio, desistiu) e o nome do cliente. Nas senhas avulsas, só o nome que o atendente digitou, se digitou.</li>
+    <li><strong>Recuperação de senha:</strong> quando você pede um link, guardamos um código temporário, também criptografado, que vale 30 minutos.</li>
+    <li><strong>No seu navegador:</strong> o acesso à conta (para você não precisar entrar toda vez), a escolha de tema claro ou escuro e os dados da demonstração da página inicial.</li>
+  </ul>
+
+  <h2>Para que usamos</h2>
+  <p>Só para o sistema funcionar: montar a fila, mostrar a posição e a espera estimada, avisar quando chega a vez, gerar o relatório do dia do estabelecimento e enviar o e-mail de recuperação de senha.</p>
+  <p>Não vendemos nem compartilhamos dados com ninguém, não usamos para propaganda e não há ferramentas de rastreamento ou estatísticas de visitas.</p>
+
+  <h2>Quem vê o quê</h2>
+  <ul>
+    <li>O <strong>estabelecimento</strong> vê o nome do cliente e os horários das senhas da própria fila.</li>
+    <li>A <strong>tela da TV</strong> e a página de entrar na fila mostram só o número das senhas, nunca nomes.</li>
+    <li><strong>Outros clientes</strong> não veem o seu nome nem o seu e-mail.</li>
+  </ul>
+
+  <h2>Onde os dados ficam</h2>
+  <p>O servidor roda no Render e o banco de dados fica no Neon, ambos nos Estados Unidos. Os e-mails de recuperação de senha são enviados pelo Gmail. Ao abrir as páginas, o navegador também carrega as fontes do Google Fonts e a biblioteca do QR code pela Cloudflare (cdnjs), que recebem o endereço de internet do aparelho, como acontece na maioria dos sites.</p>
+
+  <h2>Por quanto tempo</h2>
+  <p>Os dados ficam guardados enquanto a conta existir. As senhas da fila ficam no histórico para os relatórios do estabelecimento.</p>
+
+  <h2>Segurança</h2>
+  <p>Toda a comunicação usa conexão segura (HTTPS), as senhas das contas são criptografadas e há limite de tentativas de login para dificultar ataques.</p>
+
+  <h2>Seus direitos</h2>
+  <p>Você pode pedir para ver, corrigir ou excluir os seus dados e a sua conta. Basta escrever para <a href="mailto:hariel.silvafabricio@gmail.com">hariel.silvafabricio@gmail.com</a> usando o e-mail da conta. O pedido é atendido em até 15 dias.</p>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <p class="footer__copy">© 2026 FilaFácil · <a href="index.html">Página inicial</a></p>
+  </div>
+</footer>
+
+<script src="tema.js"></script>
+</body>
+</html>

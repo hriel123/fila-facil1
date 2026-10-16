@@ -8,7 +8,6 @@
 
   const STORAGE_KEY = "filafacil_state_v1";
   const MAX_TICKET = 999;
-  const SERVED_BASE = 128; // número inicial de vitrine, somado ao uso real
 
   /* ---------------------------------------------------------
      Estado
@@ -71,10 +70,6 @@
     btnFinish: document.getElementById("btnFinish"),
     btnClear: document.getElementById("btnClear"),
     btnClearHistory: document.getElementById("btnClearHistory"),
-
-    statServed: document.getElementById("statServed"),
-    statWaiting: document.getElementById("statWaiting"),
-    statAvg: document.getElementById("statAvg"),
   };
 
   /* ---------------------------------------------------------
@@ -138,11 +133,6 @@
           el.historyList.appendChild(li);
         });
     }
-
-    // Estatísticas
-    el.statServed.textContent = String(SERVED_BASE + state.history.length);
-    el.statWaiting.textContent = String(waiting);
-    el.statAvg.textContent = `${state.avgTime} min`;
 
     // Input de configuração (evita sobrescrever enquanto o usuário digita)
     if (document.activeElement !== el.avgTimeInput) {

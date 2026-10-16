@@ -28,6 +28,9 @@ const FF = (() => {
     "invalid name": "O nome precisa ter pelo menos 2 letras.",
     "avgMinutes must be 1 to 120": "O tempo médio deve ficar entre 1 e 120 minutos.",
     "prefix must be one letter": "A letra da senha deve ser uma única letra.",
+    "email not configured": "A recuperação de senha por e-mail ainda não foi ativada.",
+    "invalid or expired reset link": "Este link expirou ou já foi usado. Peça um novo em \"Esqueci minha senha\".",
+    "token and password are required": "Digite a nova senha.",
     network: "Sem conexão com o servidor. Verifique a internet e tente de novo.",
   };
 

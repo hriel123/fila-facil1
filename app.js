@@ -10,6 +10,7 @@
   const $ = (id) => document.getElementById(id);
   const params = new URLSearchParams(location.search);
   const filaCode = (params.get("e") || "").trim().toUpperCase();
+  const resetToken = params.get("redefinir") || "";
 
   const STATUS = {
     WAITING: "Aguardando",
@@ -175,6 +176,7 @@
 
   async function route(fila) {
     renderHeader();
+    if (resetToken) return showReset();
     const ticketId = Number(params.get("t"));
     if (!user) return showAuth(fila);
     if (user.role === "OWNER") return showPanel();
@@ -243,8 +245,29 @@
       b.classList.toggle("is-active", active);
       b.setAttribute("aria-selected", String(active));
     });
+    document.querySelector(".auth-card .tabs").hidden = tab !== "entrar" && tab !== "criar";
     $("formEntrar").hidden = tab !== "entrar";
     $("formCriar").hidden = tab !== "criar";
+    $("formEsqueci").hidden = tab !== "esqueci";
+    $("formRedefinir").hidden = tab !== "redefinir";
+    if (tab === "esqueci") {
+      const typed = $("formEntrar").email.value.trim();
+      if (typed && !$("formEsqueci").email.value) $("formEsqueci").email.value = typed;
+      $("formEsqueci").querySelector("[data-sent]").hidden = true;
+    }
+  }
+
+  function showReset() {
+    stopPolling();
+    $("authFila").hidden = true;
+    switchAuthTab("redefinir");
+    show("vAuth");
+  }
+
+  function afterLogin() {
+    renderHeader();
+    if (user.role === "OWNER") return showPanel();
+    return showCustomer();
   }
 
   document.querySelectorAll("[data-auth-tab]").forEach((b) => {
@@ -289,6 +312,50 @@
       return;
     }
     submitAuth(f, "/auth/login", { email, password: f.password.value });
+  });
+
+  $("formEsqueci").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const f = e.target;
+    const error = f.querySelector(".form__error");
+    const sent = f.querySelector("[data-sent]");
+    const email = f.email.value.trim();
+    setError(error, null);
+    sent.hidden = true;
+    if (!email) return setError(error, { friendly: "Digite o e-mail da conta." });
+    const button = f.querySelector('button[type="submit"]');
+    button.disabled = true;
+    try {
+      await FF.request("/auth/forgot", { method: "POST", body: { email }, auth: false });
+      sent.hidden = false;
+    } catch (err) {
+      setError(error, err);
+    } finally {
+      button.disabled = false;
+    }
+  });
+
+  $("formRedefinir").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const f = e.target;
+    const error = f.querySelector(".form__error");
+    setError(error, null);
+    if (f.password.value.length < 6) return setError(error, { friendly: "A senha precisa ter pelo menos 6 caracteres." });
+    if (f.password.value !== f.confirm.value) return setError(error, { friendly: "As duas senhas não são iguais." });
+    const button = f.querySelector('button[type="submit"]');
+    button.disabled = true;
+    try {
+      const data = await FF.request("/auth/reset", { method: "POST", body: { token: resetToken, password: f.password.value }, auth: false });
+      FF.setToken(data.token);
+      user = data.user;
+      history.replaceState(null, "", "app.html");
+      afterLogin();
+      toast("Senha alterada. Você já está dentro da conta.");
+    } catch (err) {
+      setError(error, err);
+    } finally {
+      button.disabled = false;
+    }
   });
 
   $("formCriar").addEventListener("submit", (e) => {

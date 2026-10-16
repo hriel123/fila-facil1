@@ -33,7 +33,7 @@ Sistema de gestão de filas para pequenos negócios. O estabelecimento cria a co
 - Aviso de "É a sua vez!" com som, vibração e notificação
 - Sair da fila e histórico das senhas
 
-O site, o app e a tela da TV têm tema claro e escuro, com a escolha salva no navegador.
+O site, o app e a tela da TV têm tema claro e escuro, com a escolha salva no navegador. Quem esquece a senha da conta recebe por e-mail um link para criar outra, e a [política de privacidade](https://fila-facil-app.onrender.com/privacidade.html) explica quais dados são guardados.
 
 <img src="docs/celular.webp" alt="Senha do cliente no celular" width="300">
 
@@ -61,6 +61,7 @@ A página inicial mantém uma demonstração do painel que funciona sem conta e 
 index.html   página de apresentação e demonstração (style.css, script.js)
 app.html     sistema: login, área do cliente e painel do estabelecimento (app.css, app.js)
 tv.html      tela de chamada para TV (tv.js)
+privacidade.html  política de privacidade
 api.js       acesso à API, sessão e som de chamada
 sw.js        mostra a notificação "É a sua vez!"
 tema.js      tema claro e escuro

@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken';
 import rateLimit from 'express-rate-limit';
 import { prisma } from '../lib/prisma.js';
 import { authMiddleware } from '../middleware/auth.js';
+import { escapeHtml, mailConfigured, sendMail } from '../lib/mail.js';
 
 const router = Router();
 
@@ -26,6 +27,22 @@ const authLimiter = rateLimit({
   legacyHeaders: false,
   message: { error: 'too many attempts, please try again later' },
 });
+
+// Pedidos de "esqueci minha senha": poucos por IP, porque cada um manda e-mail.
+const forgotLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'too many attempts, please try again later' },
+});
+
+const RESET_MINUTES = 30;
+const APP_URL = (process.env.APP_URL || 'https://fila-facil-app.onrender.com').replace(/\/+$/, '');
+
+function hashToken(token) {
+  return crypto.createHash('sha256').update(token).digest('hex');
+}
 
 function newCode() {
   let code = '';
@@ -117,6 +134,68 @@ router.post('/login', authLimiter, async (req, res) => {
   }
 
   res.json({ token: signToken(user), user: publicUser(user) });
+});
+
+// Sempre responde igual, exista ou não a conta, para não revelar quais
+// e-mails estão cadastrados. O link vale 30 minutos e só pode ser usado uma vez.
+router.post('/forgot', forgotLimiter, async (req, res) => {
+  if (!mailConfigured) {
+    return res.status(503).json({ error: 'email not configured' });
+  }
+
+  const email = typeof req.body?.email === 'string' ? req.body.email.trim().toLowerCase() : '';
+  if (!EMAIL_REGEX.test(email)) {
+    return res.status(400).json({ error: 'invalid email format' });
+  }
+
+  const user = await prisma.user.findUnique({ where: { email } });
+  if (user) {
+    const token = crypto.randomBytes(32).toString('base64url');
+    await prisma.passwordReset.create({
+      data: { userId: user.id, tokenHash: hashToken(token), expiresAt: new Date(Date.now() + RESET_MINUTES * 60000) },
+    });
+    const link = `${APP_URL}/app.html?redefinir=${token}`;
+    const name = user.name.split(/\s+/)[0];
+    sendMail({
+      to: user.email,
+      subject: 'Redefinir sua senha do FilaFácil',
+      text: `Olá, ${name}.\n\nPara criar uma nova senha no FilaFácil, abra o link abaixo. Ele vale ${RESET_MINUTES} minutos e só funciona uma vez.\n\n${link}\n\nSe você não pediu isso, ignore este e-mail: sua senha continua a mesma.`,
+      html: `<p>Olá, ${escapeHtml(name)}.</p>
+<p>Para criar uma nova senha no FilaFácil, toque no botão abaixo. O link vale ${RESET_MINUTES} minutos e só funciona uma vez.</p>
+<p><a href="${link}" style="display:inline-block;background:#ffb020;color:#17130a;padding:12px 22px;border-radius:999px;font-weight:600;text-decoration:none">Criar nova senha</a></p>
+<p style="color:#666">Se o botão não abrir, copie este endereço no navegador:<br>${link}</p>
+<p style="color:#666">Se você não pediu isso, ignore este e-mail: sua senha continua a mesma.</p>`,
+    }).catch((err) => console.error('password reset email failed:', err.message));
+  }
+
+  res.json({ ok: true });
+});
+
+router.post('/reset', authLimiter, async (req, res) => {
+  const { token, password } = req.body ?? {};
+
+  if (typeof token !== 'string' || typeof password !== 'string' || !token) {
+    return res.status(400).json({ error: 'token and password are required' });
+  }
+  if (password.length < 6) {
+    return res.status(400).json({ error: 'password must be at least 6 characters long' });
+  }
+
+  const reset = await prisma.passwordReset.findUnique({
+    where: { tokenHash: hashToken(token) },
+    include: { user: { include: { establishment: true } } },
+  });
+  if (!reset || reset.usedAt || reset.expiresAt < new Date()) {
+    return res.status(400).json({ error: 'invalid or expired reset link' });
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+  await prisma.$transaction([
+    prisma.user.update({ where: { id: reset.userId }, data: { password: hashedPassword } }),
+    prisma.passwordReset.updateMany({ where: { userId: reset.userId, usedAt: null }, data: { usedAt: new Date() } }),
+  ]);
+
+  res.json({ token: signToken(reset.user), user: publicUser(reset.user) });
 });
 
 router.get('/me', authMiddleware, async (req, res) => {
