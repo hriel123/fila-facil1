@@ -846,6 +846,18 @@
     f.elements.avgMinutes.value = e.avgMinutes;
   }
 
+  document.querySelectorAll(".number-stepper").forEach((wrap) => {
+    const input = wrap.querySelector("input");
+    wrap.querySelectorAll("[data-step]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const min = Number(input.min) || 1;
+        const max = Number(input.max) || 120;
+        const value = Number(input.value) || min;
+        input.value = String(Math.min(max, Math.max(min, value + (btn.dataset.step === "up" ? 1 : -1))));
+      });
+    });
+  });
+
   $("formAjustes").addEventListener("submit", async (e) => {
     e.preventDefault();
     const f = e.target;

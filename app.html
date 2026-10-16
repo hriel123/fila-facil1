@@ -12,6 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<script>try{if(localStorage.getItem("filafacil:tema")==="claro")document.documentElement.setAttribute("data-theme","light")}catch(e){}</script>
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="app.css">
 </head>
@@ -30,9 +31,15 @@
       </span>
       <span class="brand__name">FilaFácil</span>
     </a>
-    <div class="app-user" id="appUser" hidden>
-      <span class="app-user__name" id="userName"></span>
-      <button class="btn btn--ghost btn--sm" id="btnSair" type="button">Sair</button>
+    <div class="app-header__actions">
+      <button class="theme-toggle" type="button" data-theme-toggle aria-label="Usar tema claro">
+        <svg class="theme-toggle__sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        <svg class="theme-toggle__moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <div class="app-user" id="appUser" hidden>
+        <span class="app-user__name" id="userName"></span>
+        <button class="btn btn--ghost btn--sm" id="btnSair" type="button">Sair</button>
+      </div>
     </div>
   </div>
 </header>
@@ -320,7 +327,17 @@
           </label>
           <label class="field">
             <span class="field__label">Tempo por atendimento (min)</span>
-            <input name="avgMinutes" type="number" min="1" max="120" inputmode="numeric" required>
+            <span class="number-stepper">
+              <input name="avgMinutes" type="number" min="1" max="120" inputmode="numeric" required>
+              <span class="number-stepper__controls">
+                <button type="button" class="number-stepper__btn number-stepper__btn--up" data-step="up" aria-label="Aumentar tempo">
+                  <svg viewBox="0 0 10 6" fill="none" aria-hidden="true"><path d="M1 5L5 1L9 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+                <button type="button" class="number-stepper__btn number-stepper__btn--down" data-step="down" aria-label="Diminuir tempo">
+                  <svg viewBox="0 0 10 6" fill="none" aria-hidden="true"><path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+              </span>
+            </span>
             <small class="field__hint">Usado na estimativa até haver 3 atendimentos no dia; depois o sistema usa a média real.</small>
           </label>
         </div>
@@ -369,5 +386,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js" integrity="sha384-mZT2gIty7ZDdOGkxfP6joZcYdMW1Jvj9dRlfpTmaJAKKXTqzygtB22k7FLe+KZC1" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="api.js"></script>
 <script src="app.js"></script>
+<script src="tema.js"></script>
 </body>
 </html>

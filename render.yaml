@@ -16,4 +16,14 @@ services:
       - key: JWT_SECRET
         generateValue: true
       - key: CORS_ORIGIN
-        value: https://hriel123.github.io
+        value: https://hriel123.github.io,https://fila-facil-app.onrender.com
+
+  - type: web
+    name: fila-facil-app
+    runtime: static
+    buildCommand: mkdir -p publico && cp index.html app.html tv.html *.js *.css *.jpg favicon.png publico/
+    staticPublishPath: publico
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: no-cache

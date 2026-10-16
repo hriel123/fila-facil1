@@ -7,10 +7,27 @@
 :root {
   --ok: #4ade80;
   --ok-dim: rgba(74, 222, 128, 0.12);
+  --ok-text: #86efac;
   --warn: #f87171;
   --warn-dim: rgba(248, 113, 113, 0.12);
+  --warn-text: #fca5a5;
   --teal-dim: rgba(95, 209, 196, 0.12);
   --teal-line: rgba(95, 209, 196, 0.45);
+  --tab-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  --overlay: rgba(0, 0, 0, 0.7);
+}
+
+[data-theme="light"] {
+  --ok: #16a34a;
+  --ok-dim: rgba(22, 163, 74, 0.1);
+  --ok-text: #15803d;
+  --warn: #dc2626;
+  --warn-dim: rgba(220, 38, 38, 0.08);
+  --warn-text: #b91c1c;
+  --teal-dim: rgba(15, 139, 125, 0.1);
+  --teal-line: rgba(15, 139, 125, 0.45);
+  --tab-shadow: 0 1px 4px rgba(60, 45, 15, 0.14);
+  --overlay: rgba(23, 25, 28, 0.45);
 }
 
 body.app {
@@ -86,8 +103,8 @@ body.app {
   font-size: 0.92rem;
   margin: 14px 0;
 }
-.notice-line--warn { background: var(--warn-dim); color: #fca5a5; border: 1px solid rgba(248, 113, 113, 0.3); }
-.notice-line--ok { background: var(--ok-dim); color: #86efac; border: 1px solid rgba(74, 222, 128, 0.3); text-align: center; margin: 0; }
+.notice-line--warn { background: var(--warn-dim); color: var(--warn-text); border: 1px solid rgba(248, 113, 113, 0.3); }
+.notice-line--ok { background: var(--ok-dim); color: var(--ok-text); border: 1px solid rgba(74, 222, 128, 0.3); text-align: center; margin: 0; }
 
 /* ---------- Cards e textos ---------- */
 .card {
@@ -126,7 +143,7 @@ body.app {
   transition: background 0.18s, color 0.18s;
 }
 .tab:hover { color: var(--text); }
-.tab.is-active { background: var(--surface-2); color: var(--text); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35); }
+.tab.is-active { background: var(--surface-2); color: var(--text); box-shadow: var(--tab-shadow); }
 
 /* ---------- Formulários ---------- */
 .form { display: flex; flex-direction: column; gap: 16px; }
@@ -155,14 +172,16 @@ body.app {
   border-color: var(--accent-line);
   box-shadow: 0 0 0 3px var(--accent-dim);
 }
-.field input[type="date"] { color-scheme: dark; }
 .field--inline { flex-direction: row; align-items: center; gap: 10px; }
+.field .number-stepper input { padding-right: 46px; font-family: var(--font-mono); }
+
+.app-header__actions { display: flex; align-items: center; gap: 12px; }
 .field--inline input { width: auto; padding: 9px 12px; font-size: 0.95rem; }
 
 .form__error {
   background: var(--warn-dim);
   border: 1px solid rgba(248, 113, 113, 0.3);
-  color: #fca5a5;
+  color: var(--warn-text);
   border-radius: var(--radius-sm);
   padding: 10px 14px;
   font-size: 0.9rem;
@@ -250,7 +269,7 @@ body.app {
 .my-ticket {
   position: relative;
   text-align: center;
-  background: linear-gradient(170deg, #17140d, var(--surface) 55%);
+  background: linear-gradient(170deg, var(--warm), var(--surface) 55%);
   border: 1px solid var(--accent-line);
   border-radius: var(--radius-lg);
   padding: 26px 22px 24px;
@@ -278,7 +297,7 @@ body.app {
   font-size: clamp(3.8rem, 20vw, 5.2rem);
   line-height: 1.05;
   color: var(--accent);
-  text-shadow: 0 0 28px rgba(255, 176, 32, 0.45);
+  text-shadow: 0 0 28px var(--glow);
   letter-spacing: 0.04em;
   margin: 4px 0 14px;
   padding-bottom: 18px;
@@ -314,10 +333,10 @@ body.app {
 
 .my-ticket[data-status="CALLED"] {
   border-color: var(--teal-line);
-  background: linear-gradient(170deg, #0d1c1a, var(--surface) 60%);
+  background: linear-gradient(170deg, var(--cool), var(--surface) 60%);
   animation: calledGlow 1.6s ease-in-out infinite;
 }
-.my-ticket[data-status="CALLED"] .my-ticket__code { color: var(--teal); text-shadow: 0 0 30px rgba(95, 209, 196, 0.6); }
+.my-ticket[data-status="CALLED"] .my-ticket__code { color: var(--teal); text-shadow: 0 0 30px var(--glow-teal); }
 .my-ticket[data-status="CALLED"] .my-ticket__headline { color: var(--teal); font-size: 1.8rem; }
 .my-ticket[data-status="CALLED"]::before,
 .my-ticket[data-status="CALLED"]::after { border-color: var(--teal-line); }
@@ -343,14 +362,14 @@ body.app {
   width: 100%;
   text-align: left;
   color: var(--text);
-  background: linear-gradient(160deg, #17140d, var(--surface) 60%);
+  background: linear-gradient(160deg, var(--warm), var(--surface) 60%);
   border: 1px solid var(--accent-line);
   border-radius: var(--radius-md);
   padding: 16px 18px;
   transition: transform 0.15s, border-color 0.15s;
 }
 .active-ticket:hover { transform: translateY(-2px); border-color: var(--accent); }
-.active-ticket[data-status="CALLED"] { border-color: var(--teal); background: linear-gradient(160deg, #0d1c1a, var(--surface) 60%); }
+.active-ticket[data-status="CALLED"] { border-color: var(--teal); background: linear-gradient(160deg, var(--cool), var(--surface) 60%); }
 .active-ticket__code { font-family: var(--font-mono); font-weight: 700; font-size: 1.7rem; color: var(--accent); }
 .active-ticket[data-status="CALLED"] .active-ticket__code { color: var(--teal); }
 .active-ticket__info { display: flex; flex-direction: column; flex: 1; min-width: 0; }
@@ -387,10 +406,10 @@ body.app {
   background: var(--surface-2);
   color: var(--text-dim);
 }
-.status--DONE { background: var(--ok-dim); color: #86efac; }
+.status--DONE { background: var(--ok-dim); color: var(--ok-text); }
 .status--CALLED { background: var(--teal-dim); color: var(--teal); }
 .status--WAITING { background: var(--accent-dim); color: var(--accent); }
-.status--NO_SHOW { background: var(--warn-dim); color: #fca5a5; }
+.status--NO_SHOW { background: var(--warn-dim); color: var(--warn-text); }
 
 /* ---------- Painel ---------- */
 .panel-head {
@@ -459,7 +478,7 @@ body.app {
 .panel-grid { display: grid; grid-template-columns: 1fr; gap: 18px; align-items: start; }
 
 .now-card {
-  background: linear-gradient(170deg, #17140d, var(--surface) 55%);
+  background: linear-gradient(170deg, var(--warm), var(--surface) 55%);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 24px;
@@ -477,7 +496,7 @@ body.app {
   line-height: 1.1;
   color: var(--text-faint);
 }
-.now-card[data-state="calling"] .now-card__code { color: var(--accent); text-shadow: 0 0 26px rgba(255, 176, 32, 0.45); }
+.now-card[data-state="calling"] .now-card__code { color: var(--accent); text-shadow: 0 0 26px var(--glow); }
 .now-card__name { font-family: var(--font-display); font-size: 1.2rem; font-weight: 600; }
 .now-card__since { color: var(--text-faint); font-size: 0.86rem; min-height: 1.3em; margin-bottom: 10px; }
 .now-card__row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 4px; }
@@ -622,7 +641,7 @@ kbd {
   position: fixed;
   inset: 0;
   z-index: 200;
-  background: rgba(0, 0, 0, 0.7);
+  background: var(--overlay);
   backdrop-filter: blur(4px);
   display: grid;
   place-items: center;
