@@ -43,6 +43,8 @@
   --cool: #0d1c1a;
   --chip-hover: #3a2a15;
   --scroll-thumb: #2c3238;
+  --use-tint: rgba(255, 176, 32, 0.5);
+  --use-bright: 0.74;
 
   --container: 1160px;
   color-scheme: dark;
@@ -79,6 +81,8 @@
   --cool: #e5f5f2;
   --chip-hover: #fbe9c6;
   --scroll-thumb: #cfc7b8;
+  --use-tint: rgba(208, 132, 0, 0.32);
+  --use-bright: 1.04;
 
   color-scheme: light;
 }
@@ -811,6 +815,8 @@ input { font-family: inherit; }
 }
 .use-card:hover { transform: translateY(-4px); border-color: var(--accent-line); }
 .use-card__image {
+  position: relative;
+  isolation: isolate;
   aspect-ratio: 4 / 3;
   width: 100%;
   border-radius: var(--radius-sm);
@@ -824,13 +830,24 @@ input { font-family: inherit; }
   height: 100%;
   object-fit: cover;
   display: block;
-  filter: saturate(0.9) brightness(0.92);
-  transition: transform 0.4s ease, filter 0.3s ease;
+  /* Todas as fotos no mesmo tom (âmbar suave); a cor original aparece ao passar o mouse */
+  filter: grayscale(1) contrast(1.08) brightness(var(--use-bright));
+  transition: transform 0.5s ease, filter 0.5s ease;
+}
+.use-card__image::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--use-tint);
+  mix-blend-mode: color;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
 }
 .use-card:hover .use-card__image img {
   transform: scale(1.05);
-  filter: saturate(1) brightness(1);
+  filter: none;
 }
+.use-card:hover .use-card__image::after { opacity: 0; }
 .use-card h3 { font-size: 1rem; margin-bottom: 6px; }
 .use-card p { color: var(--text-dim); font-size: 0.88rem; }
 
