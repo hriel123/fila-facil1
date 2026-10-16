@@ -33,7 +33,7 @@ Sistema de gestão de filas para pequenos negócios. O estabelecimento cria a co
 - Aviso de "É a sua vez!" com som, vibração e notificação
 - Sair da fila e histórico das senhas
 
-O site e o app têm tema claro e escuro, com a escolha salva no navegador.
+O site, o app e a tela da TV têm tema claro e escuro, com a escolha salva no navegador.
 
 <img src="docs/celular.webp" alt="Senha do cliente no celular" width="300">
 

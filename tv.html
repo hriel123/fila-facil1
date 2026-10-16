@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <script>if(location.hostname==="hriel123.github.io")location.replace("https://fila-facil-app.onrender.com"+location.pathname.replace(/^\/fila-facil1/,"")+location.search+location.hash);</script>
+<script>try{if(localStorage.getItem("filafacil:tema")==="claro")document.documentElement.setAttribute("data-theme","light")}catch(e){}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FilaFácil — Tela de chamada</title>
 <meta name="filafacil-api" content="https://fila-facil-api.onrender.com">
@@ -22,12 +23,43 @@
     --accent: #ffb020;
     --accent-line: rgba(255, 176, 32, 0.35);
     --teal: #5fd1c4;
+    --warm: #17140d;
+    --glow: rgba(255, 176, 32, 0.45);
+    --glow-teal: rgba(95, 209, 196, 0.6);
+    --flash: rgba(95, 209, 196, 0.25);
+    --halo: rgba(255, 176, 32, 0.08);
+    --overlay: rgba(11, 13, 15, 0.92);
+    --on-accent: #17130a;
+    --status-bg: #3a1d1d;
+    --status-text: #fca5a5;
+    color-scheme: dark;
+  }
+  [data-theme="light"] {
+    --bg: #f6f4ef;
+    --surface: #ffffff;
+    --border: #ddd6c9;
+    --text: #17191c;
+    --text-dim: #545b65;
+    --text-faint: #80868f;
+    --accent: #d08400;
+    --accent-line: rgba(208, 132, 0, 0.4);
+    --teal: #0f8b7d;
+    --warm: #fff6e3;
+    --glow: rgba(208, 132, 0, 0.18);
+    --glow-teal: rgba(15, 139, 125, 0.22);
+    --flash: rgba(15, 139, 125, 0.18);
+    --halo: rgba(208, 132, 0, 0.1);
+    --overlay: rgba(246, 244, 239, 0.94);
+    --on-accent: #1a1406;
+    --status-bg: #fde2e2;
+    --status-text: #b91c1c;
+    color-scheme: light;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   [hidden] { display: none !important; }
   html, body { height: 100%; }
   body {
-    background: radial-gradient(1200px 600px at 50% 0%, rgba(255, 176, 32, 0.08), transparent 60%), var(--bg);
+    background: radial-gradient(1200px 600px at 50% 0%, var(--halo), transparent 60%), var(--bg);
     color: var(--text);
     font-family: "Inter", sans-serif;
     overflow: hidden;
@@ -37,7 +69,26 @@
   .tv__brand { display: flex; align-items: center; gap: 0.6vw; color: var(--accent); font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: clamp(1rem, 1.6vw, 1.6rem); }
   .tv__brand span { color: var(--text); }
   .tv__name { font-family: "Space Grotesk", sans-serif; font-size: clamp(1.4rem, 2.8vw, 3rem); font-weight: 700; text-align: center; flex: 1; }
+  .tv__right { display: flex; align-items: center; gap: 1.2vw; }
   .tv__clock { font-family: "JetBrains Mono", monospace; font-size: clamp(1.2rem, 2.4vw, 2.6rem); color: var(--text-dim); }
+  .theme-toggle {
+    width: clamp(34px, 2.6vw, 52px);
+    height: clamp(34px, 2.6vw, 52px);
+    display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    opacity: 0.75;
+    transition: opacity 0.2s, color 0.2s, border-color 0.2s;
+  }
+  .theme-toggle:hover, .theme-toggle:focus-visible { opacity: 1; color: var(--accent); border-color: var(--accent-line); }
+  .theme-toggle:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+  .theme-toggle svg { width: 50%; height: 50%; }
+  .theme-toggle__moon { display: none; }
+  [data-theme="light"] .theme-toggle__sun { display: none; }
+  [data-theme="light"] .theme-toggle__moon { display: block; }
 
   .tv__main { flex: 1; display: grid; grid-template-columns: 1.7fr 1fr; gap: 3vw; min-height: 0; }
   .tv__now {
@@ -48,7 +99,7 @@
     text-align: center;
     border-radius: 3vw;
     border: 2px solid var(--accent-line);
-    background: linear-gradient(170deg, #17140d, var(--surface) 60%);
+    background: linear-gradient(170deg, var(--warm), var(--surface) 60%);
     padding: 4vh 2vw;
     transition: border-color 0.3s, box-shadow 0.3s;
   }
@@ -59,16 +110,16 @@
     font-size: clamp(5rem, 17vw, 20rem);
     line-height: 1.05;
     color: var(--accent);
-    text-shadow: 0 0 6vw rgba(255, 176, 32, 0.45);
+    text-shadow: 0 0 6vw var(--glow);
     letter-spacing: 0.04em;
   }
   .tv__hint { font-family: "Space Grotesk", sans-serif; font-size: clamp(1.2rem, 2.6vw, 3rem); font-weight: 600; color: var(--text-dim); }
   .tv__now.is-calling { border-color: var(--teal); animation: flash 1s ease-in-out 5; }
-  .tv__now.is-calling .tv__code { color: var(--teal); text-shadow: 0 0 6vw rgba(95, 209, 196, 0.6); }
+  .tv__now.is-calling .tv__code { color: var(--teal); text-shadow: 0 0 6vw var(--glow-teal); }
   .tv__now.is-calling .tv__hint { color: var(--teal); }
   @keyframes flash {
     0%, 100% { box-shadow: 0 0 0 0 rgba(95, 209, 196, 0); }
-    50% { box-shadow: 0 0 0 1.4vw rgba(95, 209, 196, 0.25); }
+    50% { box-shadow: 0 0 0 1.4vw var(--flash); }
   }
 
   .tv__side { display: flex; flex-direction: column; gap: 3vh; min-height: 0; }
@@ -87,20 +138,20 @@
   .tv__closed { color: var(--text-faint); font-size: clamp(1rem, 1.6vw, 1.9rem); }
   .tv__status {
     position: fixed; left: 50%; bottom: 2vh; transform: translateX(-50%);
-    background: #3a1d1d; color: #fca5a5; border-radius: 999px; padding: 8px 18px; font-size: 1rem;
+    background: var(--status-bg); color: var(--status-text); border-radius: 999px; padding: 8px 18px; font-size: 1rem;
   }
 
   .tv-start {
     position: fixed; inset: 0; z-index: 10;
     display: grid; place-items: center; text-align: center;
-    background: rgba(11, 13, 15, 0.92);
+    background: var(--overlay);
     padding: 24px;
   }
   .tv-start h2 { font-family: "Space Grotesk", sans-serif; font-size: clamp(1.6rem, 3vw, 3rem); margin-bottom: 12px; }
   .tv-start p { color: var(--text-dim); font-size: clamp(1rem, 1.6vw, 1.6rem); margin-bottom: 28px; }
   .tv-start__btn {
     font: 600 clamp(1.1rem, 2vw, 2rem) "Inter", sans-serif;
-    background: var(--accent); color: #17130a;
+    background: var(--accent); color: var(--on-accent);
     border: 0; border-radius: 999px; padding: 0.8em 2.2em; cursor: pointer;
   }
   .tv-start__btn:focus-visible { outline: 3px solid #fff; outline-offset: 4px; }
@@ -127,7 +178,13 @@
       <span>FilaFácil</span>
     </div>
     <h1 class="tv__name" id="tvName">Carregando…</h1>
-    <div class="tv__clock" id="tvClock">--:--</div>
+    <div class="tv__right">
+      <div class="tv__clock" id="tvClock">--:--</div>
+      <button class="theme-toggle" type="button" data-theme-toggle aria-label="Usar tema claro">
+        <svg class="theme-toggle__sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        <svg class="theme-toggle__moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+    </div>
   </header>
 
   <main class="tv__main">
@@ -165,5 +222,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js" integrity="sha384-mZT2gIty7ZDdOGkxfP6joZcYdMW1Jvj9dRlfpTmaJAKKXTqzygtB22k7FLe+KZC1" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="api.js"></script>
 <script src="tv.js"></script>
+<script src="tema.js"></script>
 </body>
 </html>
