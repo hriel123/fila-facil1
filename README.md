@@ -2,7 +2,7 @@
 
 ![Página inicial do FilaFácil](docs/inicio.webp)
 
-**Site:** https://hriel123.github.io/fila-facil1/ · **Entrar:** https://hriel123.github.io/fila-facil1/app.html
+**Site:** https://fila-facil-app.onrender.com · **Entrar:** https://fila-facil-app.onrender.com/app.html
 
 Sistema de gestão de filas para pequenos negócios. O estabelecimento cria a conta e mostra um QR code; o cliente pega a senha pelo celular e acompanha a vez; o atendente chama o próximo com um clique, e o celular do cliente toca. Pensado para barbearias, salões, oficinas, lanchonetes, pequenos comércios, recepções, clínicas e eventos.
 
@@ -33,6 +33,8 @@ Sistema de gestão de filas para pequenos negócios. O estabelecimento cria a co
 - Aviso de "É a sua vez!" com som, vibração e notificação
 - Sair da fila e histórico das senhas
 
+O site e o app têm tema claro e escuro, com a escolha salva no navegador.
+
 <img src="docs/celular.webp" alt="Senha do cliente no celular" width="300">
 
 A espera estimada usa o tempo médio configurado até haver 3 atendimentos no dia; depois, a média real do dia. A numeração das senhas recomeça do 1 todo dia.
@@ -49,7 +51,7 @@ A página inicial mantém uma demonstração do painel que funciona sem conta e 
 
 ## Tecnologias
 
-- **Site:** HTML, CSS e JavaScript puros, sem frameworks, no GitHub Pages
+- **Site:** HTML, CSS e JavaScript puros, sem frameworks, no Render (site estático)
 - **API:** Node.js com Express 5, Prisma e PostgreSQL (Neon), no Render
 - **Login:** JWT e bcrypt
 
@@ -61,8 +63,9 @@ app.html     sistema: login, área do cliente e painel do estabelecimento (app.c
 tv.html      tela de chamada para TV (tv.js)
 api.js       acesso à API, sessão e som de chamada
 sw.js        mostra a notificação "É a sua vez!"
+tema.js      tema claro e escuro
 backend/     API: rotas, schema do Prisma e migrations (veja backend/README.md)
-render.yaml  serviço da API no Render
+render.yaml  serviços no Render: API e site estático
 *.jpg        imagens dos tipos de negócio
 docs/        imagens deste README
 ```
