@@ -36,7 +36,7 @@ Sistema de gestão de filas para pequenos negócios. O estabelecimento cria a co
 
 O site, o app e a tela da TV têm tema claro e escuro, com a escolha salva no navegador. Quem esquece a senha da conta recebe por e-mail um link para criar outra, e a [política de privacidade](https://fila-facil-app.onrender.com/privacidade.html) explica quais dados são guardados.
 
-<img src="docs/celular.webp" alt="Senha do cliente no celular" width="300">
+<img src="docs/celular-sem-conta.webp" alt="Pegar senha sem conta, só com o nome" width="260"> <img src="docs/celular.webp" alt="Aviso de que chegou a vez, com o guichê" width="260">
 
 A espera estimada usa o tempo médio configurado até haver 3 atendimentos no dia; depois, a média real do dia, dividida pelo número de guichês. A numeração das senhas recomeça do 1 todo dia.
 
