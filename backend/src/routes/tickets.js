@@ -1,49 +1,10 @@
 import { Router } from 'express';
-import rateLimit from 'express-rate-limit';
 import { prisma } from '../lib/prisma.js';
-import { activeTickets, issueTicket, serviceMinutes, today } from '../lib/queue.js';
+import { ACTIVE, issueTicket, today } from '../lib/queue.js';
+import { customerView } from '../lib/views.js';
+import { joinLimiter } from '../lib/limits.js';
 
 const router = Router();
-
-const joinLimiter = rateLimit({
-  windowMs: 10 * 60 * 1000,
-  limit: 15,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: { error: 'too many tickets, please try again later' },
-});
-
-const ACTIVE = ['WAITING', 'CALLED'];
-
-// Senha do cliente com a posição na fila e a estimativa de espera.
-async function customerView(ticket) {
-  const day = today();
-  const base = {
-    id: ticket.id,
-    code: ticket.code,
-    status: ticket.day !== day && ACTIVE.includes(ticket.status) ? 'EXPIRED' : ticket.status,
-    day: ticket.day,
-    establishment: { code: ticket.establishment.code, name: ticket.establishment.name },
-    callCount: ticket.callCount,
-    createdAt: ticket.createdAt,
-    calledAt: ticket.calledAt,
-    finishedAt: ticket.finishedAt,
-    ahead: null,
-    waitMinutes: null,
-    current: null,
-  };
-  if (base.status !== 'WAITING' && base.status !== 'CALLED') return base;
-
-  const active = await activeTickets(ticket.establishmentId, day);
-  const current = active.find((t) => t.status === 'CALLED') ?? null;
-  base.current = current?.code ?? null;
-  if (base.status === 'WAITING') {
-    const avg = await serviceMinutes(ticket.establishment, day);
-    base.ahead = active.filter((t) => t.status === 'WAITING' && t.number < ticket.number).length;
-    base.waitMinutes = (base.ahead + (current ? 1 : 0)) * avg;
-  }
-  return base;
-}
 
 async function findOwnTicket(req, res) {
   const id = Number(req.params.id);

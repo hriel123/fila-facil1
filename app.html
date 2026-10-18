@@ -74,6 +74,18 @@
         <p class="fila-card__info"><span data-fila="waiting"></span> · <span data-fila="estimate"></span></p>
       </div>
 
+      <form class="guest-card" id="formConvidado" novalidate hidden>
+        <h2 class="guest-card__title">Pegar senha sem conta</h2>
+        <p class="guest-card__text">É rápido: só com o seu nome. Esta senha fica guardada neste celular.</p>
+        <div class="guest-card__row">
+          <input name="name" maxlength="60" placeholder="Seu nome" autocomplete="name" aria-label="Seu nome" required>
+          <button class="btn btn--primary" type="submit">Pegar senha</button>
+        </div>
+        <p class="notice-line notice-line--warn" data-closed hidden>Esta fila não está recebendo senhas agora. Tente mais tarde.</p>
+        <p class="form__error" role="alert" hidden></p>
+      </form>
+      <p class="auth-divider" id="authDivider" hidden><span>ou use sua conta para guardar o histórico</span></p>
+
       <div class="auth-card">
         <div class="tabs" role="tablist" aria-label="Entrar ou criar conta">
           <button class="tab is-active" role="tab" type="button" data-auth-tab="entrar" aria-selected="true">Entrar</button>
@@ -275,7 +287,11 @@
 
       <div class="panel-grid">
         <div class="now-card" id="nowCard" data-state="idle">
-          <p class="now-card__label">Chamando agora</p>
+          <div class="counter-pick" id="counterPick" hidden>
+            <span class="counter-pick__label">Este aparelho é o guichê</span>
+            <div class="counter-pick__btns" id="counterButtons"></div>
+          </div>
+          <p class="now-card__label" id="nowLabel">Chamando agora</p>
           <div class="now-card__code" id="nowCode">—</div>
           <p class="now-card__name" id="nowName">Ninguém sendo atendido</p>
           <p class="now-card__since" id="nowSince"></p>
@@ -286,6 +302,10 @@
             <button class="btn btn--ghost" id="btnNoShow" type="button">Não veio</button>
           </div>
           <p class="kbd-hint">Atalho: tecla <kbd>N</kbd> chama o próximo.</p>
+          <div class="others" id="othersBox" hidden>
+            <p class="others__title">Outros guichês</p>
+            <ul class="others__list" id="othersList"></ul>
+          </div>
         </div>
 
         <div class="queue-card">
@@ -334,7 +354,7 @@
         <h2 class="card__title">Atendimentos</h2>
         <div class="table-wrap">
           <table class="r-table">
-            <thead><tr><th>Senha</th><th>Cliente</th><th>Situação</th><th>Chegou</th><th>Chamada</th><th>Espera</th><th>Atendimento</th></tr></thead>
+            <thead><tr><th>Senha</th><th>Cliente</th><th>Situação</th><th>Guichê</th><th>Chegou</th><th>Chamada</th><th>Espera</th><th>Atendimento</th></tr></thead>
             <tbody id="rRows"></tbody>
           </table>
         </div>
@@ -370,6 +390,21 @@
               </span>
             </span>
             <small class="field__hint">Usado na estimativa até haver 3 atendimentos no dia; depois o sistema usa a média real.</small>
+          </label>
+          <label class="field">
+            <span class="field__label">Guichês de atendimento</span>
+            <span class="number-stepper">
+              <input name="counters" type="number" min="1" max="20" inputmode="numeric" required>
+              <span class="number-stepper__controls">
+                <button type="button" class="number-stepper__btn number-stepper__btn--up" data-step="up" aria-label="Mais um guichê">
+                  <svg viewBox="0 0 10 6" fill="none" aria-hidden="true"><path d="M1 5L5 1L9 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+                <button type="button" class="number-stepper__btn number-stepper__btn--down" data-step="down" aria-label="Menos um guichê">
+                  <svg viewBox="0 0 10 6" fill="none" aria-hidden="true"><path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+              </span>
+            </span>
+            <small class="field__hint">Com mais de um, cada aparelho do atendimento escolhe o seu guichê no painel (mesma conta), e todos chamam da mesma fila.</small>
           </label>
         </div>
         <p class="form__error" role="alert" hidden></p>

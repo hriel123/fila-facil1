@@ -19,10 +19,11 @@
   tick();
   setInterval(tick, 5000);
 
-  function speak(ticketCode) {
+  function speak(ticketCode, counter) {
     if (!("speechSynthesis" in window)) return;
     const match = ticketCode.match(/^([A-Z])(\d+)$/);
-    const text = match ? `Senha ${match[1]}, ${Number(match[2])}` : `Senha ${ticketCode}`;
+    let text = match ? `Senha ${match[1]}, ${Number(match[2])}` : `Senha ${ticketCode}`;
+    if (counter) text += `, guichê ${counter}`;
     const utter = new SpeechSynthesisUtterance(text);
     utter.lang = "pt-BR";
     const voice = speechSynthesis.getVoices().find((v) => v.lang && v.lang.toLowerCase().startsWith("pt"));
@@ -32,7 +33,7 @@
     speechSynthesis.speak(utter);
   }
 
-  function announce(ticketCode) {
+  function announce(ticketCode, counter) {
     const now = $("tvNow");
     now.classList.remove("is-calling");
     void now.offsetWidth;
@@ -40,13 +41,17 @@
     clearTimeout(flashTimer);
     flashTimer = setTimeout(() => now.classList.remove("is-calling"), 6000);
     FF.chime();
-    setTimeout(() => speak(ticketCode), 1300);
+    setTimeout(() => speak(ticketCode, counter), 1300);
   }
 
   function render(f) {
     $("tvName").textContent = f.name;
     document.title = `${f.name} · FilaFácil`;
+    const counterOf = (c) => (f.counters > 1 && c ? c : null);
+    const counter = f.current ? counterOf(f.current.counter) : null;
     $("tvCode").textContent = f.current ? f.current.code : "—";
+    $("tvCounter").hidden = !counter;
+    $("tvCounter").textContent = counter ? `Guichê ${counter}` : "";
     $("tvHint").textContent = f.current ? "Dirija-se ao atendimento" : "Aguardando a próxima chamada";
     $("tvWaiting").textContent = String(f.waiting);
 
@@ -58,9 +63,15 @@
       li.textContent = "Nenhuma ainda hoje";
       list.append(li);
     }
-    f.recent.forEach((c) => {
+    f.recent.forEach((r) => {
       const li = document.createElement("li");
-      li.textContent = c;
+      li.textContent = r.code;
+      const c = counterOf(r.counter);
+      if (c) {
+        const small = document.createElement("small");
+        small.textContent = `Guichê ${c}`;
+        li.append(small);
+      }
       list.append(li);
     });
 
@@ -78,7 +89,7 @@
     }
 
     const callId = f.current ? f.current.callId : null;
-    if (lastCallId !== undefined && callId && callId !== lastCallId) announce(f.current.code);
+    if (lastCallId !== undefined && callId && callId !== lastCallId) announce(f.current.code, counter);
     lastCallId = callId;
   }
 

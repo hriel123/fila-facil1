@@ -28,6 +28,9 @@ const FF = (() => {
     "invalid name": "O nome precisa ter pelo menos 2 letras.",
     "avgMinutes must be 1 to 120": "O tempo médio deve ficar entre 1 e 120 minutos.",
     "prefix must be one letter": "A letra da senha deve ser uma única letra.",
+    "name is required": "Digite o seu nome.",
+    "counters must be 1 to 20": "O número de guichês deve ficar entre 1 e 20.",
+    "counter busy": "Um dos guichês que você quer tirar ainda está atendendo alguém. Finalize esse atendimento antes.",
     "email not configured": "A recuperação de senha por e-mail ainda não foi ativada.",
     "invalid or expired reset link": "Este link expirou ou já foi usado. Peça um novo em \"Esqueci minha senha\".",
     "token and password are required": "Digite a nova senha.",
@@ -56,8 +59,8 @@ const FF = (() => {
     } catch { /* navegador sem armazenamento: a sessão dura só esta aba */ }
   }
 
-  async function request(path, { method = "GET", body, auth = true, timeout = 75000 } = {}) {
-    const headers = {};
+  async function request(path, { method = "GET", body, auth = true, timeout = 75000, headers: extra = {} } = {}) {
+    const headers = { ...extra };
     if (body !== undefined) headers["Content-Type"] = "application/json";
     const token = getToken();
     if (auth && token) headers.Authorization = `Bearer ${token}`;

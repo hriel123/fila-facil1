@@ -113,6 +113,23 @@
     text-shadow: 0 0 6vw var(--glow);
     letter-spacing: 0.04em;
   }
+  .tv__counter {
+    font-family: "Space Grotesk", sans-serif;
+    font-weight: 700;
+    font-size: clamp(1.8rem, 4.4vw, 5.2rem);
+    line-height: 1.1;
+    color: var(--text);
+    margin-bottom: 1vh;
+  }
+  .tv__now.is-calling .tv__counter { color: var(--teal); }
+  .tv__recent li small {
+    display: block;
+    font-family: "Inter", sans-serif;
+    font-weight: 600;
+    font-size: clamp(0.8rem, 1.2vw, 1.4rem);
+    color: var(--text-faint);
+    letter-spacing: 0.02em;
+  }
   .tv__hint { font-family: "Space Grotesk", sans-serif; font-size: clamp(1.2rem, 2.6vw, 3rem); font-weight: 600; color: var(--text-dim); }
   .tv__now.is-calling { border-color: var(--teal); animation: flash 1s ease-in-out 5; }
   .tv__now.is-calling .tv__code { color: var(--teal); text-shadow: 0 0 6vw var(--glow-teal); }
@@ -191,6 +208,7 @@
     <section class="tv__now" id="tvNow" aria-live="assertive">
       <p class="tv__label">Senha chamada</p>
       <div class="tv__code" id="tvCode">—</div>
+      <p class="tv__counter" id="tvCounter" hidden></p>
       <p class="tv__hint" id="tvHint">Aguardando a primeira chamada</p>
     </section>
     <aside class="tv__side">

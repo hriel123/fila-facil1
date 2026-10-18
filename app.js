@@ -178,7 +178,19 @@
     renderHeader();
     if (resetToken) return showReset();
     const ticketId = Number(params.get("t"));
-    if (!user) return showAuth(fila);
+    if (!user) {
+      if (ticketId && guestFor(ticketId)) return showTicket(ticketId);
+      if (fila) {
+        const mine = guestList().find((g) => g.code === fila.code);
+        if (mine) {
+          try {
+            const t = await guestRequest(mine);
+            if (isActive(t)) return showTicket(t.id, t);
+          } catch { /* chave antiga ou senha de outro dia: segue para pegar outra */ }
+        }
+      }
+      return showAuth(fila);
+    }
     if (user.role === "OWNER") return showPanel();
     if (ticketId) return showTicket(ticketId);
     if (fila) return showJoin(fila);
@@ -200,7 +212,31 @@
      Dados públicos da fila (cartões de "entrar na fila")
   --------------------------------------------------------- */
   function estimateFor(fila) {
-    return (fila.waiting + (fila.current ? 1 : 0)) * fila.avgMinutes;
+    const busy = fila.calling ? fila.calling.length : fila.current ? 1 : 0;
+    return Math.round(((fila.waiting + busy) / Math.max(1, fila.counters || 1)) * fila.avgMinutes);
+  }
+
+  /* ---------------------------------------------------------
+     Senhas pegas sem conta: a chave de cada uma fica só neste
+     aparelho e é o que permite acompanhar e sair da fila.
+  --------------------------------------------------------- */
+  const GUEST_KEY = "filafacil:convidado";
+
+  function guestList() {
+    try { return JSON.parse(localStorage.getItem(GUEST_KEY)) || []; } catch { return []; }
+  }
+
+  function saveGuest(entry) {
+    const list = [entry, ...guestList().filter((g) => g.id !== entry.id)].slice(0, 10);
+    try { localStorage.setItem(GUEST_KEY, JSON.stringify(list)); } catch { /* sem armazenamento */ }
+  }
+
+  function guestFor(id) {
+    return guestList().find((g) => g.id === id) || null;
+  }
+
+  function guestRequest(entry, options = {}) {
+    return FF.request(`/public/tickets/${entry.id}`, { ...options, auth: false, headers: { "X-Ticket-Key": entry.key } });
   }
 
   function fillFila(fila) {
@@ -228,6 +264,15 @@
     authFila = fila;
     $("authFila").hidden = !fila;
     if (fila) fillFila(fila);
+    $("formConvidado").hidden = !fila;
+    $("authDivider").hidden = !fila;
+    if (fila) {
+      const f = $("formConvidado");
+      f.querySelector(".guest-card__row").hidden = !fila.open;
+      f.querySelector("[data-closed]").hidden = fila.open;
+      try { if (!f.elements.name.value) f.elements.name.value = localStorage.getItem("filafacil:nome") || ""; } catch { /* sem armazenamento */ }
+      setError(f.querySelector(".form__error"), null);
+    }
 
     // Quem chega pelo QR code de uma fila é cliente: esconde a escolha de tipo.
     document.querySelector(".role-pick").hidden = !!fila;
@@ -235,7 +280,7 @@
     document.querySelector(`#formCriar input[name="role"][value="${ownerFirst ? "OWNER" : "CUSTOMER"}"]`).checked = true;
     syncRole();
 
-    switchAuthTab(params.has("criar") || fila ? "criar" : "entrar");
+    switchAuthTab(params.has("criar") ? "criar" : "entrar");
     show("vAuth");
   }
 
@@ -312,6 +357,28 @@
       return;
     }
     submitAuth(f, "/auth/login", { email, password: f.password.value });
+  });
+
+  $("formConvidado").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const f = e.target;
+    const error = f.querySelector(".form__error");
+    const name = f.elements.name.value.trim();
+    setError(error, null);
+    if (name.length < 2) return setError(error, { friendly: "Digite o seu nome." });
+    FF.unlockAudio();
+    const button = f.querySelector('button[type="submit"]');
+    button.disabled = true;
+    try {
+      const data = await FF.request(`/public/${encodeURIComponent(authFila.code)}/tickets`, { method: "POST", body: { name }, auth: false });
+      saveGuest({ id: data.ticket.id, key: data.key, code: authFila.code });
+      try { localStorage.setItem("filafacil:nome", name); } catch { /* sem armazenamento */ }
+      showTicket(data.ticket.id, data.ticket);
+    } catch (err) {
+      setError(error, err);
+    } finally {
+      button.disabled = false;
+    }
   });
 
   $("formEsqueci").addEventListener("submit", async (e) => {
@@ -424,6 +491,7 @@
      Cliente: acompanhar a senha
   --------------------------------------------------------- */
   let watched = null;
+  let watchedGuest = null;
   let maxAhead = 0;
   let avisosOn = false;
   let wakeLock = null;
@@ -435,14 +503,17 @@
   function showTicket(id, initial) {
     history.replaceState(null, "", `app.html?t=${id}`);
     watched = null;
+    watchedGuest = user ? null : guestFor(id);
     maxAhead = 0;
     show("vTicket");
-    const refresh = async () => renderTicket(await FF.request(`/tickets/${id}`));
+    const guest = watchedGuest;
+    const refresh = async () => renderTicket(await (guest ? guestRequest(guest) : FF.request(`/tickets/${id}`)));
     if (initial) {
       renderTicket(initial);
     } else {
       refresh().catch((err) => {
-        showCustomer();
+        if (user) showCustomer();
+        else showAuth(null);
         toast(err.friendly);
       });
     }
@@ -469,7 +540,8 @@
       else detail = t.current ? "Assim que o atendimento atual terminar, você será chamado." : "Você será chamado em instantes.";
     } else if (t.status === "CALLED") {
       headline = "É a sua vez!";
-      detail = t.callCount > 1 ? `Dirija-se ao atendimento. Você foi chamado ${t.callCount} vezes.` : "Dirija-se ao atendimento.";
+      const where = t.counters > 1 && t.counter ? `Dirija-se ao guichê ${t.counter}.` : "Dirija-se ao atendimento.";
+      detail = t.callCount > 1 ? `${where} Você foi chamado ${t.callCount} vezes.` : where;
     } else if (t.status === "DONE") {
       headline = "Atendimento concluído";
       detail = "Obrigado por usar o FilaFácil!";
@@ -497,6 +569,8 @@
 
     $("btnDesistir").hidden = !active;
     $("btnMinhas").hidden = active;
+    $("btnMinhas").textContent = watchedGuest ? "Pegar outra senha" : "Ver minhas senhas";
+    $("btnMinhas").href = watchedGuest ? `app.html?e=${encodeURIComponent(t.establishment.code)}` : "app.html";
     $("ticketTip").hidden = !active;
     renderAvisos();
 
@@ -571,7 +645,8 @@
     if (navigator.vibrate) navigator.vibrate([400, 200, 400, 200, 900]);
     flashTitle(`É a sua vez! ${t.code}`);
     if ("Notification" in window && Notification.permission === "granted") {
-      const options = { body: `Senha ${t.code} · ${t.establishment.name}. Dirija-se ao atendimento.`, icon: "favicon.png", tag: `filafacil-${t.id}`, renotify: true };
+      const where = t.counters > 1 && t.counter ? `Dirija-se ao guichê ${t.counter}.` : "Dirija-se ao atendimento.";
+      const options = { body: `Senha ${t.code} · ${t.establishment.name}. ${where}`, icon: "favicon.png", tag: `filafacil-${t.id}`, renotify: true };
       const reg = await registerWorker();
       try {
         if (reg) await reg.showNotification("É a sua vez!", options);
@@ -583,7 +658,7 @@
   $("btnDesistir").addEventListener("click", async () => {
     if (!watched || !confirm(`Sair da fila e cancelar a senha ${watched.code}?`)) return;
     try {
-      renderTicket(await FF.request(`/tickets/${watched.id}`, { method: "DELETE" }));
+      renderTicket(await (watchedGuest ? guestRequest(watchedGuest, { method: "DELETE" }) : FF.request(`/tickets/${watched.id}`, { method: "DELETE" })));
     } catch (err) {
       toast(err.friendly);
     }
@@ -616,7 +691,7 @@
       const info = el("span", "active-ticket__info");
       info.append(el("strong", null, t.establishment.name));
       const line = t.status === "CALLED"
-        ? "É a sua vez! Dirija-se ao atendimento."
+        ? `É a sua vez! ${t.counters > 1 && t.counter ? `Dirija-se ao guichê ${t.counter}.` : "Dirija-se ao atendimento."}`
         : `${t.ahead === 0 ? "Você é o próximo" : `${people(t.ahead)} na sua frente`} · ${waitText(t.waitMinutes) || "agora"}`;
       info.append(el("span", null, line));
       card.append(info, el("span", "active-ticket__go", "Acompanhar ›"));
@@ -662,8 +737,58 @@
     startPolling(refreshPanel, 4000);
   }
 
+  /* Guichê deste aparelho: cada atendente escolhe o seu no painel. */
+  const COUNTER_KEY = "filafacil:guiche";
+  let myCounter = 1;
+  try { myCounter = Number(localStorage.getItem(COUNTER_KEY)) || 1; } catch { /* sem armazenamento */ }
+
+  function setCounter(n) {
+    myCounter = n;
+    try { localStorage.setItem(COUNTER_KEY, String(n)); } catch { /* sem armazenamento */ }
+  }
+
   async function refreshPanel() {
-    renderPanel(await FF.request("/panel"));
+    renderPanel(await FF.request(`/panel?counter=${myCounter}`));
+  }
+
+  function renderCounters(p) {
+    const total = p.establishment.counters;
+    const multi = total > 1;
+    $("counterPick").hidden = !multi;
+    $("othersBox").hidden = !multi;
+    $("nowLabel").textContent = multi ? `Chamando agora · Guichê ${p.counter}` : "Chamando agora";
+    if (!multi) return;
+
+    const pick = $("counterButtons");
+    if (pick.childElementCount !== total) {
+      pick.replaceChildren();
+      for (let n = 1; n <= total; n++) {
+        const b = el("button", "counter-pick__btn", String(n));
+        b.type = "button";
+        b.dataset.counter = String(n);
+        b.setAttribute("aria-label", `Guichê ${n}`);
+        b.addEventListener("click", () => {
+          setCounter(n);
+          refreshPanel().catch((err) => toast(err.friendly));
+        });
+        pick.append(b);
+      }
+    }
+    pick.querySelectorAll("[data-counter]").forEach((b) => {
+      const active = Number(b.dataset.counter) === p.counter;
+      b.classList.toggle("is-active", active);
+      b.setAttribute("aria-pressed", String(active));
+    });
+
+    const others = $("othersList");
+    others.replaceChildren();
+    for (let n = 1; n <= total; n++) {
+      if (n === p.counter) continue;
+      const t = p.others.find((o) => o.counter === n);
+      const li = el("li", t ? "others__item is-busy" : "others__item");
+      li.append(el("span", "others__counter", `Guichê ${n}`), el("span", "mono", t ? t.code : "livre"));
+      others.append(li);
+    }
   }
 
   function switchPtab(tab) {
@@ -693,6 +818,8 @@
   function renderPanel(p) {
     panel = p;
     const e = p.establishment;
+    if (p.counter !== myCounter) setCounter(p.counter);
+    renderCounters(p);
     $("pName").textContent = e.name;
     $("pOpen").checked = e.open;
     $("pOpenLabel").textContent = e.open ? "Recebendo senhas" : "Fila fechada";
@@ -750,7 +877,7 @@
     const buttons = document.querySelectorAll(".now-card .btn");
     buttons.forEach((b) => { b.disabled = true; });
     try {
-      const p = await FF.request(path, { method: "POST", ...options });
+      const p = await FF.request(path, { method: "POST", ...options, body: { ...options.body, counter: myCounter } });
       renderPanel(p);
       return p;
     } catch (err) {
@@ -764,7 +891,7 @@
 
   $("btnNext").addEventListener("click", async () => {
     const p = await panelAction("/panel/next");
-    if (p?.current) toast(`Chamando ${p.current.code}`);
+    if (p?.current) toast(`Chamando ${p.current.code}${p.establishment.counters > 1 ? ` no guichê ${p.counter}` : ""}`);
   });
   $("btnRecall").addEventListener("click", async () => {
     const p = await panelAction("/panel/recall");
@@ -780,7 +907,7 @@
   async function cancelTicket(t) {
     if (!confirm(`Tirar a senha ${t.code} (${ticketName(t)}) da fila?`)) return;
     try {
-      renderPanel(await FF.request(`/panel/tickets/${t.id}`, { method: "DELETE" }));
+      renderPanel(await FF.request(`/panel/tickets/${t.id}?counter=${myCounter}`, { method: "DELETE" }));
     } catch (err) {
       toast(err.friendly);
     }
@@ -804,7 +931,7 @@
     e.preventDefault();
     const name = e.target.name.value.trim();
     try {
-      const p = await FF.request("/panel/tickets", { method: "POST", body: { name } });
+      const p = await FF.request("/panel/tickets", { method: "POST", body: { name, counter: myCounter } });
       renderPanel(p);
       const created = p.waiting[p.waiting.length - 1];
       if (created) toast(`Senha ${created.code} gerada${name ? ` para ${name}` : ""}`);
@@ -817,7 +944,7 @@
   $("pOpen").addEventListener("change", async (e) => {
     const open = e.target.checked;
     try {
-      renderPanel(await FF.request("/panel/settings", { method: "PATCH", body: { open } }));
+      renderPanel(await FF.request("/panel/settings", { method: "PATCH", body: { open, counter: myCounter } }));
       toast(open ? "Fila aberta: os clientes já podem pegar senha." : "Fila fechada para novas senhas.");
     } catch (err) {
       e.target.checked = !open;
@@ -848,6 +975,8 @@
 
   function renderReport(r) {
     report = r;
+    const multi = (panel?.establishment.counters ?? 1) > 1 || r.tickets.some((t) => t.counter && t.counter > 1);
+    document.querySelector(".r-table").classList.toggle("no-counter", !multi);
     $("kIssued").textContent = String(r.issued);
     $("kDone").textContent = String(r.done);
     $("kNoShow").textContent = String(r.noShow);
@@ -875,7 +1004,7 @@
     $("rEmpty").hidden = r.tickets.length > 0;
     r.tickets.forEach((t) => {
       const tr = document.createElement("tr");
-      const cells = [t.code, ticketName(t), null, hhmm(t.createdAt), hhmm(t.calledAt), mins(t.waitMinutes), mins(t.serviceMinutes)];
+      const cells = [t.code, ticketName(t), null, t.counter ? String(t.counter) : "—", hhmm(t.createdAt), hhmm(t.calledAt), mins(t.waitMinutes), mins(t.serviceMinutes)];
       cells.forEach((value, i) => {
         const td = document.createElement("td");
         if (i === 2) td.append(el("span", `status status--${t.status}`, STATUS[t.status]));
@@ -890,9 +1019,9 @@
   $("btnCsv").addEventListener("click", () => {
     if (!report) return;
     const num = (v) => (v === null ? "" : String(v).replace(".", ","));
-    const lines = [["Senha", "Cliente", "Situação", "Chegou", "Chamada", "Finalizada", "Espera (min)", "Atendimento (min)"]];
+    const lines = [["Senha", "Cliente", "Situação", "Guichê", "Chegou", "Chamada", "Finalizada", "Espera (min)", "Atendimento (min)"]];
     report.tickets.forEach((t) => {
-      lines.push([t.code, ticketName(t), STATUS[t.status], hhmm(t.createdAt), hhmm(t.calledAt), hhmm(t.finishedAt), num(t.waitMinutes), num(t.serviceMinutes)]);
+      lines.push([t.code, ticketName(t), STATUS[t.status], t.counter ?? "", hhmm(t.createdAt), hhmm(t.calledAt), hhmm(t.finishedAt), num(t.waitMinutes), num(t.serviceMinutes)]);
     });
     const csv = lines.map((row) => row.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(";")).join("\r\n");
     const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8" });
@@ -911,6 +1040,7 @@
     f.elements.name.value = e.name;
     f.elements.prefix.value = e.prefix;
     f.elements.avgMinutes.value = e.avgMinutes;
+    f.elements.counters.value = e.counters;
   }
 
   document.querySelectorAll(".number-stepper").forEach((wrap) => {
@@ -933,6 +1063,8 @@
       name: f.elements.name.value.trim(),
       prefix: f.elements.prefix.value.trim(),
       avgMinutes: Number(f.elements.avgMinutes.value),
+      counters: Number(f.elements.counters.value),
+      counter: myCounter,
     };
     setError(error, null);
     try {

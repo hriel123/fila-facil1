@@ -4,6 +4,8 @@ const TIME_ZONE = 'America/Fortaleza';
 const dayFormat = new Intl.DateTimeFormat('en-CA', { timeZone: TIME_ZONE, year: 'numeric', month: '2-digit', day: '2-digit' });
 const hourFormat = new Intl.DateTimeFormat('en-GB', { timeZone: TIME_ZONE, hour: '2-digit', hourCycle: 'h23' });
 
+export const ACTIVE = ['WAITING', 'CALLED'];
+
 export function today(date = new Date()) {
   return dayFormat.format(date);
 }
@@ -62,4 +64,16 @@ export async function issueTicket(tx, establishmentId, data) {
   return tx.ticket.create({
     data: { ...data, establishmentId, number, day, code: formatCode(establishment.prefix, number) },
   });
+}
+
+// Espera estimada: as pessoas na frente mais os atendimentos em andamento,
+// divididos pelos guichês que atendem ao mesmo tempo.
+export function estimateMinutes(ahead, busy, counters, avg) {
+  return Math.round(((ahead + busy) / Math.max(1, counters)) * avg);
+}
+
+// Senhas em chamada, da chamada mais recente para a mais antiga.
+export function byLastCall(tickets) {
+  const when = (t) => (t.lastCallAt ?? t.calledAt ?? t.createdAt).getTime();
+  return [...tickets].sort((a, b) => when(b) - when(a));
 }

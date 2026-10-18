@@ -38,6 +38,7 @@ model Establishment {
   name         String
   prefix       String   @default("A")
   avgMinutes   Int      @default(5)
+  counters     Int      @default(1)
   open         Boolean  @default(true)
   nextNumber   Int      @default(1)
   numberingDay String?
@@ -54,7 +55,10 @@ model Ticket {
   day             String
   status          TicketStatus  @default(WAITING)
   guestName       String?
+  guestKeyHash    String?
+  counter         Int?
   callCount       Int           @default(0)
+  lastCallAt      DateTime?
   createdAt       DateTime      @default(now())
   calledAt        DateTime?
   finishedAt      DateTime?

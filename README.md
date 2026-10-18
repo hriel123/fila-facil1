@@ -8,7 +8,7 @@ Sistema de gestão de filas para pequenos negócios. O estabelecimento cria a co
 
 ## Como funciona
 
-1. **Pegue a senha:** o cliente lê o QR code do estabelecimento, entra ou cria a conta e toca em "Pegar senha".
+1. **Pegue a senha:** o cliente lê o QR code do estabelecimento e pega a senha só com o nome, ou entrando na conta.
 2. **Acompanhe a fila:** no celular, ele vê quantas pessoas faltam e a espera estimada.
 3. **Chame o próximo:** no painel, o atendente chama a próxima senha. O celular do cliente toca e vibra, e a TV mostra o número.
 
@@ -19,6 +19,7 @@ Sistema de gestão de filas para pequenos negócios. O estabelecimento cria a co
 **Para o estabelecimento**
 
 - Painel de atendimento: chamar o próximo (ou tecla N), chamar de novo, finalizar e marcar quem não veio
+- Vários guichês: cada aparelho do atendimento escolhe o seu guichê e todos chamam da mesma fila; o cliente e a TV mostram para qual guichê ir
 - Senha avulsa para quem chega sem celular
 - Abrir e fechar a fila para novas senhas
 - QR code da fila e cartaz pronto para imprimir
@@ -28,7 +29,7 @@ Sistema de gestão de filas para pequenos negócios. O estabelecimento cria a co
 
 **Para o cliente**
 
-- Senha pelo celular, sem papel
+- Senha pelo celular, sem papel, com conta ou só com o nome
 - Posição na fila e espera estimada, atualizadas sozinhas
 - Aviso de "É a sua vez!" com som, vibração e notificação
 - Sair da fila e histórico das senhas
@@ -37,7 +38,7 @@ O site, o app e a tela da TV têm tema claro e escuro, com a escolha salva no na
 
 <img src="docs/celular.webp" alt="Senha do cliente no celular" width="300">
 
-A espera estimada usa o tempo médio configurado até haver 3 atendimentos no dia; depois, a média real do dia. A numeração das senhas recomeça do 1 todo dia.
+A espera estimada usa o tempo médio configurado até haver 3 atendimentos no dia; depois, a média real do dia, dividida pelo número de guichês. A numeração das senhas recomeça do 1 todo dia.
 
 ![Tela de chamada para TV](docs/tv.webp)
 

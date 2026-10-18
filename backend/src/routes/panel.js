@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { prisma } from '../lib/prisma.js';
-import { activeTickets, hourOf, issueTicket, lockEstablishment, minutesBetween, serviceMinutes, today } from '../lib/queue.js';
+import { activeTickets, byLastCall, hourOf, issueTicket, lockEstablishment, minutesBetween, serviceMinutes, today } from '../lib/queue.js';
 
 const router = Router();
 
@@ -23,12 +23,19 @@ function average(values) {
   return values.length ? values.reduce((sum, v) => sum + v, 0) / values.length : null;
 }
 
+// Guichê do aparelho que fez o pedido (1 até o número de guichês da fila).
+function counterOf(req) {
+  const value = Number(req.body?.counter ?? req.query.counter);
+  return Number.isInteger(value) ? Math.min(Math.max(value, 1), req.establishment.counters) : 1;
+}
+
 function panelTicket(ticket) {
   return {
     id: ticket.id,
     code: ticket.code,
     name: ticket.user?.name ?? ticket.guestName ?? null,
-    walkIn: ticket.userId === null,
+    walkIn: ticket.userId === null && !ticket.guestKeyHash,
+    counter: ticket.counter,
     status: ticket.status,
     createdAt: ticket.createdAt,
     calledAt: ticket.calledAt,
@@ -37,7 +44,7 @@ function panelTicket(ticket) {
   };
 }
 
-async function panelState(establishment) {
+async function panelState(establishment, counter = 1) {
   const day = today();
   const [active, finished, avg] = await Promise.all([
     activeTickets(establishment.id, day),
@@ -48,9 +55,10 @@ async function panelState(establishment) {
     }),
     serviceMinutes(establishment, day),
   ]);
-  const current = active.find((t) => t.status === 'CALLED') ?? null;
+  const calling = active.filter((t) => t.status === 'CALLED');
+  const current = calling.find((t) => (t.counter ?? 1) === counter) ?? null;
   const waiting = active.filter((t) => t.status === 'WAITING');
-  const called = [...finished, ...(current ? [current] : [])].filter((t) => t.calledAt);
+  const called = [...finished, ...calling].filter((t) => t.calledAt);
   const services = finished.filter((t) => t.status === 'DONE' && t.calledAt && t.finishedAt);
 
   return {
@@ -59,9 +67,12 @@ async function panelState(establishment) {
       name: establishment.name,
       prefix: establishment.prefix,
       avgMinutes: establishment.avgMinutes,
+      counters: establishment.counters,
       open: establishment.open,
     },
+    counter,
     current: current ? panelTicket(current) : null,
+    others: byLastCall(calling.filter((t) => t !== current)).map(panelTicket),
     waiting: waiting.map(panelTicket),
     recent: finished.slice(0, 5).map(panelTicket),
     stats: {
@@ -76,55 +87,58 @@ async function panelState(establishment) {
 }
 
 // Executa uma ação com a fila travada e devolve o painel atualizado.
+// Executa uma ação do guichê com a fila travada e devolve o painel atualizado.
 async function act(req, res, action) {
+  const counter = counterOf(req);
   await prisma.$transaction(async (tx) => {
     await lockEstablishment(tx, req.establishment.id);
-    await action(tx, today(), new Date());
+    await action(tx, today(), new Date(), counter);
   });
   const establishment = await prisma.establishment.findUnique({ where: { id: req.establishment.id } });
-  res.json(await panelState(establishment));
+  res.json(await panelState(establishment, counter));
 }
 
-function closeCurrent(tx, establishmentId, day, now, status) {
+function closeCurrent(tx, establishmentId, day, now, counter, status) {
   return tx.ticket.updateMany({
-    where: { establishmentId, day, status: 'CALLED' },
+    where: { establishmentId, day, status: 'CALLED', counter },
     data: { status, finishedAt: now },
   });
 }
 
 router.get('/', async (req, res) => {
-  res.json(await panelState(req.establishment));
+  res.json(await panelState(req.establishment, counterOf(req)));
 });
 
-// Finaliza quem está sendo atendido (se houver) e chama a próxima senha.
+// Finaliza quem está sendo atendido neste guichê (se houver) e chama a
+// próxima senha da fila para ele.
 router.post('/next', (req, res) =>
-  act(req, res, async (tx, day, now) => {
+  act(req, res, async (tx, day, now, counter) => {
     const id = req.establishment.id;
-    await closeCurrent(tx, id, day, now, 'DONE');
+    await closeCurrent(tx, id, day, now, counter, 'DONE');
     const next = await tx.ticket.findFirst({ where: { establishmentId: id, day, status: 'WAITING' }, orderBy: { number: 'asc' } });
     if (next) {
-      await tx.ticket.update({ where: { id: next.id }, data: { status: 'CALLED', calledAt: now, callCount: 1 } });
+      await tx.ticket.update({ where: { id: next.id }, data: { status: 'CALLED', counter, calledAt: now, lastCallAt: now, callCount: 1 } });
     }
   }));
 
 router.post('/recall', (req, res) =>
-  act(req, res, (tx, day) =>
+  act(req, res, (tx, day, now, counter) =>
     tx.ticket.updateMany({
-      where: { establishmentId: req.establishment.id, day, status: 'CALLED' },
-      data: { callCount: { increment: 1 } },
+      where: { establishmentId: req.establishment.id, day, status: 'CALLED', counter },
+      data: { callCount: { increment: 1 }, lastCallAt: now },
     })));
 
 router.post('/finish', (req, res) =>
-  act(req, res, (tx, day, now) => closeCurrent(tx, req.establishment.id, day, now, 'DONE')));
+  act(req, res, (tx, day, now, counter) => closeCurrent(tx, req.establishment.id, day, now, counter, 'DONE')));
 
 router.post('/no-show', (req, res) =>
-  act(req, res, (tx, day, now) => closeCurrent(tx, req.establishment.id, day, now, 'NO_SHOW')));
+  act(req, res, (tx, day, now, counter) => closeCurrent(tx, req.establishment.id, day, now, counter, 'NO_SHOW')));
 
 // Senha avulsa, para quem chega sem celular ou sem conta.
 router.post('/tickets', async (req, res) => {
   const name = typeof req.body?.name === 'string' ? req.body.name.trim().slice(0, 60) : '';
   await prisma.$transaction((tx) => issueTicket(tx, req.establishment.id, { guestName: name || null }));
-  res.status(201).json(await panelState(req.establishment));
+  res.status(201).json(await panelState(req.establishment, counterOf(req)));
 });
 
 router.delete('/tickets/:id', async (req, res) => {
@@ -138,11 +152,11 @@ router.delete('/tickets/:id', async (req, res) => {
   if (result.count === 0) {
     return res.status(404).json({ error: 'waiting ticket not found' });
   }
-  res.json(await panelState(req.establishment));
+  res.json(await panelState(req.establishment, counterOf(req)));
 });
 
 router.patch('/settings', async (req, res) => {
-  const { name, avgMinutes, open, prefix } = req.body ?? {};
+  const { name, avgMinutes, open, prefix, counters } = req.body ?? {};
   const data = {};
 
   if (name !== undefined) {
@@ -162,8 +176,18 @@ router.patch('/settings', async (req, res) => {
     data.prefix = prefix.toUpperCase();
   }
 
+  if (counters !== undefined) {
+    if (!Number.isInteger(counters) || counters < 1 || counters > 20) return res.status(400).json({ error: 'counters must be 1 to 20' });
+    // Não deixa sumir um guichê que ainda está atendendo alguém.
+    const busy = await prisma.ticket.findFirst({
+      where: { establishmentId: req.establishment.id, day: today(), status: 'CALLED', counter: { gt: counters } },
+    });
+    if (busy) return res.status(409).json({ error: 'counter busy', counter: busy.counter });
+    data.counters = counters;
+  }
+
   const establishment = await prisma.establishment.update({ where: { id: req.establishment.id }, data });
-  res.json(await panelState(establishment));
+  res.json(await panelState(establishment, Math.min(counterOf(req), establishment.counters)));
 });
 
 router.get('/report', async (req, res) => {

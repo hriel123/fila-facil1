@@ -241,6 +241,89 @@ body.app {
 .role-option input:checked + .role-option__box svg { color: var(--accent); }
 .role-option input:focus-visible + .role-option__box { outline: 2px solid var(--accent); outline-offset: 2px; }
 
+/* ---------- Senha sem conta ---------- */
+.guest-card {
+  background: var(--surface);
+  border: 1px solid var(--accent-line);
+  border-radius: var(--radius-lg);
+  padding: 22px;
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.guest-card__title { font-size: 1.25rem; }
+.guest-card__text { color: var(--text-dim); font-size: 0.92rem; }
+.guest-card__row { display: flex; gap: 10px; }
+.guest-card__row input {
+  flex: 1;
+  min-width: 0;
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-size: 1rem;
+  padding: 13px 14px;
+}
+.guest-card__row input:focus { outline: none; border-color: var(--accent-line); box-shadow: 0 0 0 3px var(--accent-dim); }
+.guest-card .notice-line { margin: 0; }
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text-faint);
+  font-size: 0.85rem;
+  text-align: center;
+}
+.auth-divider::before,
+.auth-divider::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+
+/* ---------- Guichês ---------- */
+.counter-pick {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 14px;
+  margin-bottom: 8px;
+  border-bottom: 1px dashed var(--border);
+}
+.counter-pick__label { font-size: 0.8rem; color: var(--text-faint); }
+.counter-pick__btns { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+.counter-pick__btn {
+  min-width: 40px;
+  height: 40px;
+  padding: 0 10px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--bg-soft);
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 1rem;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.counter-pick__btn:hover { border-color: var(--accent-line); color: var(--text); }
+.counter-pick__btn.is-active { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.others { margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--border); text-align: left; }
+.others__title { font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 6px; }
+.others__list { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 6px; }
+.others__item {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: 10px;
+  background: var(--bg-soft);
+  font-size: 0.85rem;
+  color: var(--text-faint);
+}
+.others__item.is-busy { color: var(--text); }
+.others__item.is-busy .mono { color: var(--accent); font-weight: 700; }
+.others__counter { color: var(--text-dim); }
+.r-table.no-counter th:nth-child(4),
+.r-table.no-counter td:nth-child(4) { display: none; }
+
 /* ---------- Cartão da fila ---------- */
 .fila-card {
   background: linear-gradient(160deg, var(--surface-2), var(--surface));

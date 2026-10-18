@@ -19,24 +19,27 @@ Servidor que guarda as contas, as filas e as senhas do FilaFácil. Há dois tipo
 | GET | `/auth/me` | todos | Dados da conta logada |
 | POST | `/auth/forgot` | todos | Envia por e-mail um link para criar nova senha (`email`). Responde igual exista ou não a conta |
 | POST | `/auth/reset` | todos | Troca a senha com o código do link (`token`, `password`). O link vale 30 minutos e só funciona uma vez |
-| GET | `/public/:code` | página da fila e TV | Nome da fila, quantos aguardam, senha chamada e últimas chamadas. Só códigos de senha, sem nomes |
+| GET | `/public/:code` | página da fila e TV | Nome da fila, guichês, quantos aguardam, senha chamada (com o guichê) e últimas chamadas. Só códigos de senha, sem nomes |
+| POST | `/public/:code/tickets` | cliente sem conta | Pega senha só com `name`. Devolve a senha e uma chave que fica só no celular |
+| GET | `/public/tickets/:id` | cliente sem conta | A senha, com o cabeçalho `X-Ticket-Key: <chave>` |
+| DELETE | `/public/tickets/:id` | cliente sem conta | Sai da fila, com o mesmo cabeçalho |
 | GET | `/tickets` | cliente | Senhas ativas (com posição e espera estimada) e histórico |
 | GET | `/tickets/:id` | cliente | Uma senha do cliente |
 | POST | `/tickets` | cliente | Pega senha na fila `code`. Se já tiver uma ativa nessa fila, devolve a mesma |
 | DELETE | `/tickets/:id` | cliente | Sai da fila |
-| GET | `/panel` | estabelecimento | Senha chamada, fila, últimos atendimentos e números do dia |
-| POST | `/panel/next` | estabelecimento | Finaliza o atendimento atual e chama a próxima senha |
-| POST | `/panel/recall` | estabelecimento | Chama a senha atual de novo |
-| POST | `/panel/finish` | estabelecimento | Finaliza o atendimento atual |
-| POST | `/panel/no-show` | estabelecimento | Marca que a senha chamada não compareceu |
+| GET | `/panel?counter=N` | estabelecimento | Senha chamada no guichê N, os outros guichês, fila, últimos atendimentos e números do dia |
+| POST | `/panel/next` | estabelecimento | Finaliza o atendimento do guichê (`counter`) e chama a próxima senha para ele |
+| POST | `/panel/recall` | estabelecimento | Chama de novo a senha do guichê (`counter`) |
+| POST | `/panel/finish` | estabelecimento | Finaliza o atendimento do guichê (`counter`) |
+| POST | `/panel/no-show` | estabelecimento | Marca que a senha chamada no guichê (`counter`) não compareceu |
 | POST | `/panel/tickets` | estabelecimento | Gera uma senha avulsa (`name` opcional) |
 | DELETE | `/panel/tickets/:id` | estabelecimento | Tira uma senha da fila |
-| PATCH | `/panel/settings` | estabelecimento | Muda `name`, `prefix`, `avgMinutes` ou `open` |
+| PATCH | `/panel/settings` | estabelecimento | Muda `name`, `prefix`, `avgMinutes`, `counters` (1 a 20) ou `open`. Não deixa tirar um guichê que está atendendo |
 | GET | `/panel/report?day=AAAA-MM-DD` | estabelecimento | Relatório do dia: totais, esperas, senhas por hora e lista de atendimentos |
 
 As rotas de `/tickets` e `/panel` exigem o cabeçalho `Authorization: Bearer <token>` da conta do tipo certo.
 
-A numeração das senhas recomeça do 1 todo dia (fuso de Fortaleza). A espera estimada usa o tempo médio configurado até haver 3 atendimentos no dia; depois, a média real do dia.
+A numeração das senhas recomeça do 1 todo dia (fuso de Fortaleza). A espera estimada usa o tempo médio configurado até haver 3 atendimentos no dia; depois, a média real do dia. Ela soma as pessoas na frente e os atendimentos em andamento e divide pelo número de guichês.
 
 ## Rodar localmente
 
