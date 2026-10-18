@@ -70,13 +70,16 @@ A API sobe em `http://localhost:3001`. Para o site usar essa API, coloque o ende
 
 No plano gratuito o servidor dorme depois de 15 minutos sem uso. O primeiro acesso depois disso leva de 30 a 60 segundos; o app mostra um aviso enquanto isso.
 
-### 3. E-mail de recuperação de senha (Gmail)
+### 3. E-mail de recuperação de senha (Brevo)
 
-1. Na conta Google que vai enviar os e-mails, ative a **verificação em duas etapas**.
-2. Em [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords), crie uma senha de app (nome: `FilaFácil`) e copie os 16 caracteres.
-3. No Render, abra o serviço `fila-facil-api` > **Environment** e preencha `SMTP_USER` com o endereço Gmail e `SMTP_PASS` com a senha de app. `SMTP_HOST`, `SMTP_PORT` e `APP_URL` já vêm do `render.yaml`.
+O plano gratuito do Render bloqueia o envio de e-mail por SMTP, então o servidor envia pela API do [Brevo](https://www.brevo.com) (gratuito, 300 e-mails por dia), que funciona por HTTPS.
 
-Sem essas variáveis, o app avisa que a recuperação por e-mail ainda não foi ativada.
+1. Crie uma conta gratuita no Brevo.
+2. Em **Senders, Domains & Dedicated IPs** > **Senders**, adicione o remetente (nome `FilaFácil` e o seu e-mail, por exemplo um Gmail) e confirme pelo link que o Brevo manda para esse e-mail.
+3. Em **SMTP & API** > **API Keys**, gere uma chave e copie.
+4. No Render, abra o serviço `fila-facil-api` > **Environment** e crie `BREVO_API_KEY` com a chave e `SMTP_USER` com o e-mail do remetente (ou `MAIL_FROM`).
+
+Sem a chave do Brevo, o servidor tenta SMTP (`SMTP_HOST`, `SMTP_USER`, `SMTP_PASS`), que só funciona localmente ou em servidor pago. Sem nenhum dos dois, o app avisa que a recuperação por e-mail ainda não foi ativada.
 
 ### 4. Ligar o site ao servidor
 
