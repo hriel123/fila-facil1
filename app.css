@@ -84,7 +84,6 @@ body.app {
   margin-bottom: 16px;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
-.loading__hint { margin-top: 10px; font-size: 0.88rem; color: var(--text-faint); }
 
 .notice {
   text-align: center;
@@ -838,6 +837,31 @@ kbd {
   text-align: center;
 }
 .toast.is-visible { opacity: 1; transform: translate(-50%, 0); }
+
+/* ---------- Aviso de servidor acordando ---------- */
+.wake {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  z-index: 300;
+  transform: translateX(-50%);
+  width: min(440px, calc(100vw - 32px));
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  background: var(--surface-2);
+  border: 1px solid var(--accent-line);
+  border-radius: 16px;
+  padding: 16px 18px;
+  box-shadow: var(--shadow-md);
+  animation: wake-in 0.25s ease-out;
+}
+.wake[hidden] { display: none; }
+.wake .spinner { width: 22px; height: 22px; border-width: 2.5px; margin: 2px 0 0; flex-shrink: 0; }
+.wake strong { display: block; color: var(--text); }
+.wake p { margin-top: 4px; color: var(--text-dim); font-size: 0.88rem; line-height: 1.45; }
+.wake small { display: block; margin-top: 8px; color: var(--text-faint); font-size: 0.8rem; font-variant-numeric: tabular-nums; }
+@keyframes wake-in { from { opacity: 0; transform: translate(-50%, -8px); } }
 
 /* ---------- Cartaz (só na impressão) ---------- */
 .poster { display: none; }

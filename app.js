@@ -136,7 +136,6 @@
       return;
     }
 
-    const slow = setTimeout(() => { $("loadingHint").hidden = false; }, 4000);
     try {
       const fila = filaCode ? await loadFila(filaCode) : null;
       if (FF.getToken()) {
@@ -148,10 +147,8 @@
           user = null;
         }
       }
-      clearTimeout(slow);
       await route(fila);
     } catch (err) {
-      clearTimeout(slow);
       showOffline(err.friendly || "O servidor do FilaFácil não respondeu.", true);
     }
   }

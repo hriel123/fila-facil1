@@ -59,6 +59,25 @@ const FF = (() => {
     } catch { /* navegador sem armazenamento: a sessão dura só esta aba */ }
   }
 
+  /* Servidor acordando: sem uso, o servidor entra em repouso e a primeira
+     resposta pode levar até 1 minuto. Depois de 4 s esperando, mostra o
+     aviso #wakeNotice (nas páginas que têm um). */
+  let pending = 0;
+  let slowTimer = null;
+  let wakeTick = null;
+
+  function wakeNotice(since) {
+    const box = document.getElementById("wakeNotice");
+    if (!box) return;
+    clearInterval(wakeTick);
+    box.hidden = !since;
+    if (!since) return;
+    const time = box.querySelector("[data-wake-time]");
+    const tick = () => { time.textContent = `Aguardando há ${Math.round((Date.now() - since) / 1000)} s`; };
+    tick();
+    wakeTick = setInterval(tick, 1000);
+  }
+
   async function request(path, { method = "GET", body, auth = true, timeout = 75000, headers: extra = {} } = {}) {
     if (typeof FFDemo !== "undefined" && FFDemo.handles(path)) {
       try {
@@ -74,6 +93,10 @@ const FF = (() => {
 
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), timeout);
+    if (++pending === 1) {
+      const start = Date.now();
+      slowTimer = setTimeout(() => wakeNotice(start), 4000);
+    }
     let res;
     try {
       res = await fetch(base + path, {
@@ -86,6 +109,10 @@ const FF = (() => {
       throw new ApiError(0, "network");
     } finally {
       clearTimeout(timer);
+      if (--pending === 0) {
+        clearTimeout(slowTimer);
+        wakeNotice(null);
+      }
     }
 
     let data = null;

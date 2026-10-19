@@ -57,7 +57,6 @@
     <div class="loading">
       <span class="spinner" aria-hidden="true"></span>
       <p>Carregando…</p>
-      <p class="loading__hint" id="loadingHint" hidden>O servidor estava em repouso e está acordando. Na primeira vez isso pode levar até 1 minuto.</p>
     </div>
   </section>
 
@@ -459,6 +458,15 @@
 </div>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<div class="wake" id="wakeNotice" role="status" aria-live="polite" hidden>
+  <span class="spinner" aria-hidden="true"></span>
+  <div>
+    <strong>Ligando o servidor…</strong>
+    <p>Ele fica em repouso quando ninguém está usando e leva até 1 minuto para voltar. Aguarde, não precisa recarregar a página.</p>
+    <small data-wake-time></small>
+  </div>
+</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js" integrity="sha384-mZT2gIty7ZDdOGkxfP6joZcYdMW1Jvj9dRlfpTmaJAKKXTqzygtB22k7FLe+KZC1" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="demo.js"></script>
