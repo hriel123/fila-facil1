@@ -25,7 +25,8 @@ Sistema de gestão de filas para pequenos negócios. O estabelecimento cria a co
 - QR code da fila e cartaz pronto para imprimir
 - Tela de chamada para TV, com a senha em letras grandes, som e voz
 - Relatório do dia: senhas emitidas, atendidas, não vieram, desistências, espera média e maior espera, tempo médio de atendimento, senhas por horário e planilha (CSV)
-- Ajustes: nome, letra da senha e tempo médio por atendimento
+- Ajustes: nome, letra da senha, tempo médio por atendimento e número de guichês
+- Modo visitante: o painel de uma barbearia de exemplo, com fila, relatório e tela da TV funcionando, salvo só no navegador
 
 **Para o cliente**
 
@@ -46,7 +47,7 @@ Os prints do sistema usam dados de exemplo.
 
 ## Demonstração
 
-A página inicial mantém uma demonstração do painel que funciona sem conta e salva os dados só no navegador:
+Para conhecer o sistema completo sem criar conta, use **Entrar como visitante** na tela de login (ou abra [app.html?demo](https://fila-facil-app.onrender.com/app.html?demo)). A página inicial também mantém uma demonstração simples do painel, e as fotos de "Onde usar" abrem em tela cheia. Tudo isso salva os dados só no navegador:
 
 ![Demonstração do painel](docs/demonstracao.webp)
 
@@ -64,6 +65,7 @@ app.html     sistema: login, área do cliente e painel do estabelecimento (app.c
 tv.html      tela de chamada para TV (tv.js)
 privacidade.html  política de privacidade
 api.js       acesso à API, sessão e som de chamada
+demo.js      modo visitante: responde ao painel e à TV com dados de exemplo
 sw.js        mostra a notificação "É a sua vez!"
 tema.js      tema claro e escuro
 backend/     API: rotas, schema do Prisma e migrations (veja backend/README.md)

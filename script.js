@@ -319,6 +319,71 @@
   }
 
   /* ---------------------------------------------------------
+     Fotos de "Onde usar" em tela cheia
+  --------------------------------------------------------- */
+  const zoomButtons = [...document.querySelectorAll("[data-zoom]")];
+  const lightbox = document.getElementById("lightbox");
+  let zoomIndex = 0;
+  let zoomOpener = null;
+  let touchX = null;
+
+  function showPhoto(index) {
+    zoomIndex = (index + zoomButtons.length) % zoomButtons.length;
+    const card = zoomButtons[zoomIndex].closest(".use-card");
+    const img = zoomButtons[zoomIndex].querySelector("img");
+    const lbImg = document.getElementById("lbImg");
+    lbImg.src = img.currentSrc || img.src;
+    lbImg.alt = img.alt;
+    document.getElementById("lbTitle").textContent = card.querySelector("h3").textContent;
+    document.getElementById("lbText").textContent = card.querySelector("p").textContent;
+    document.getElementById("lbCount").textContent = `${zoomIndex + 1} de ${zoomButtons.length}`;
+  }
+
+  function openPhoto(index) {
+    zoomOpener = document.activeElement;
+    showPhoto(index);
+    lightbox.hidden = false;
+    document.body.style.overflow = "hidden";
+    lightbox.querySelector(".lightbox__close").focus();
+  }
+
+  function closePhoto() {
+    lightbox.hidden = true;
+    document.body.style.overflow = "";
+    if (zoomOpener) zoomOpener.focus();
+  }
+
+  if (lightbox && zoomButtons.length) {
+    zoomButtons.forEach((btn, i) => btn.addEventListener("click", () => openPhoto(i)));
+    lightbox.addEventListener("click", (e) => {
+      const action = e.target.closest("[data-lb]")?.dataset.lb;
+      if (action === "close" || e.target === lightbox) closePhoto();
+      else if (action === "prev") showPhoto(zoomIndex - 1);
+      else if (action === "next") showPhoto(zoomIndex + 1);
+    });
+    document.addEventListener("keydown", (e) => {
+      if (lightbox.hidden) return;
+      if (e.key === "Escape") closePhoto();
+      else if (e.key === "ArrowLeft") showPhoto(zoomIndex - 1);
+      else if (e.key === "ArrowRight") showPhoto(zoomIndex + 1);
+      else if (e.key === "Tab") {
+        const focusable = [...lightbox.querySelectorAll("button")];
+        const at = focusable.indexOf(document.activeElement);
+        const next = (at + (e.shiftKey ? -1 : 1) + focusable.length) % focusable.length;
+        e.preventDefault();
+        focusable[next].focus();
+      }
+    });
+    lightbox.addEventListener("touchstart", (e) => { touchX = e.touches[0].clientX; }, { passive: true });
+    lightbox.addEventListener("touchend", (e) => {
+      if (touchX === null) return;
+      const dx = e.changedTouches[0].clientX - touchX;
+      touchX = null;
+      if (Math.abs(dx) > 50) showPhoto(zoomIndex + (dx < 0 ? 1 : -1));
+    });
+  }
+
+  /* ---------------------------------------------------------
      Semeadura inicial (apenas na primeira visita, sem dados salvos)
   --------------------------------------------------------- */
   (function seedInitialDemo() {

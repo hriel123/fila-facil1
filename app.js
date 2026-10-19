@@ -176,6 +176,7 @@
 
   async function route(fila) {
     renderHeader();
+    if (params.has("demo") && !user) return startDemo();
     if (resetToken) return showReset();
     const ticketId = Number(params.get("t"));
     if (!user) {
@@ -199,13 +200,29 @@
   }
 
   function renderHeader() {
+    $("demoBar").hidden = !(user && FFDemo.active());
     $("appUser").hidden = !user;
     if (user) $("userName").textContent = firstName(user.name);
   }
 
   $("btnSair").addEventListener("click", () => {
+    if (FFDemo.active()) FFDemo.clear();
     FF.setToken(null);
     location.href = "app.html";
+  });
+
+  async function startDemo() {
+    FFDemo.start();
+    user = (await FF.request("/auth/me")).user;
+    afterLogin();
+  }
+
+  $("btnDemo").addEventListener("click", () => startDemo().catch((err) => toast(err.friendly)));
+
+  $("btnDemoCriar").addEventListener("click", () => {
+    FFDemo.clear();
+    FF.setToken(null);
+    location.href = "app.html?criar=negocio";
   });
 
   /* ---------------------------------------------------------
@@ -295,6 +312,7 @@
     $("formCriar").hidden = tab !== "criar";
     $("formEsqueci").hidden = tab !== "esqueci";
     $("formRedefinir").hidden = tab !== "redefinir";
+    $("demoCta").hidden = !!authFila || (tab !== "entrar" && tab !== "criar");
     if (tab === "esqueci") {
       const typed = $("formEntrar").email.value.trim();
       if (typed && !$("formEsqueci").email.value) $("formEsqueci").email.value = typed;
@@ -1105,6 +1123,7 @@
     $("qrBox").innerHTML = svg || "";
     if (!svg) $("qrBox").append(el("p", "card__text", "Não foi possível gerar o QR code agora. Use o link abaixo."));
     $("qrLink").value = link;
+    $("qrDemoNote").hidden = !FFDemo.active();
     openModal();
   });
 

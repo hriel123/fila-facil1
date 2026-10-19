@@ -204,7 +204,7 @@
       <div class="section__head">
         <p class="eyebrow reveal">Ao vivo</p>
         <h2 class="section__title reveal">Demonstração do FilaFácil</h2>
-        <p class="section__subtitle reveal">Experimente aqui o painel do atendente: esta demonstração salva tudo só no seu navegador. Para usar com clientes de verdade, <a href="app.html?criar=negocio" class="link-accent">crie uma conta</a>.</p>
+        <p class="section__subtitle reveal">Experimente aqui o painel do atendente: esta demonstração salva tudo só no seu navegador. Para ver o sistema completo, com relatório e tela da TV, <a href="app.html?demo" class="link-accent">entre como visitante</a>. Para usar com clientes de verdade, <a href="app.html?criar=negocio" class="link-accent">crie uma conta</a>.</p>
       </div>
 
       <div class="demo reveal">
@@ -326,58 +326,58 @@
 
       <div class="grid grid--4">
         <article class="use-card reveal">
-          <div class="use-card__image">
+          <button type="button" class="use-card__image" data-zoom aria-label="Ver a foto de Barbearias em tela cheia">
             <img src="barbearias.jpg" alt="Interior de uma barbearia moderna" loading="lazy" width="900" height="600">
-          </div>
+          </button>
           <h3>Barbearias</h3>
           <p>Organize os cortes sem filas na porta.</p>
         </article>
         <article class="use-card reveal">
-          <div class="use-card__image">
+          <button type="button" class="use-card__image" data-zoom aria-label="Ver a foto de Salões em tela cheia">
             <img src="saloes.jpg" alt="Salão de beleza com clientes sendo atendidas" loading="lazy" width="900" height="490">
-          </div>
+          </button>
           <h3>Salões</h3>
           <p>Controle o fluxo de clientes com previsibilidade.</p>
         </article>
         <article class="use-card reveal">
-          <div class="use-card__image">
+          <button type="button" class="use-card__image" data-zoom aria-label="Ver a foto de Oficinas em tela cheia">
             <img src="oficinas.jpg" alt="Oficina mecânica com veículos em manutenção" loading="lazy" width="900" height="490">
-          </div>
+          </button>
           <h3>Oficinas</h3>
           <p>Gerencie a ordem de atendimento dos veículos.</p>
         </article>
         <article class="use-card reveal">
-          <div class="use-card__image">
+          <button type="button" class="use-card__image" data-zoom aria-label="Ver a foto de Lanchonetes em tela cheia">
             <img src="lanchonetes.jpg" alt="Fachada de uma lanchonete de bairro" loading="lazy" width="900" height="727">
-          </div>
+          </button>
           <h3>Lanchonetes</h3>
           <p>Evite tumulto no balcão em horários de pico.</p>
         </article>
         <article class="use-card reveal">
-          <div class="use-card__image">
+          <button type="button" class="use-card__image" data-zoom aria-label="Ver a foto de Pequenos comércios em tela cheia">
             <img src="pequenos-comercios.jpg" alt="Clientes entrando em um pequeno comércio de bairro" loading="lazy" width="900" height="600">
-          </div>
+          </button>
           <h3>Pequenos comércios</h3>
           <p>Atenda um cliente de cada vez, sem confusão.</p>
         </article>
         <article class="use-card reveal">
-          <div class="use-card__image">
+          <button type="button" class="use-card__image" data-zoom aria-label="Ver a foto de Recepções em tela cheia">
             <img src="recepcoes.jpg" alt="Recepcionistas atendendo em um balcão de recepção" loading="lazy" width="900" height="600">
-          </div>
+          </button>
           <h3>Recepções</h3>
           <p>Organize visitantes e agendamentos com clareza.</p>
         </article>
         <article class="use-card reveal">
-          <div class="use-card__image">
+          <button type="button" class="use-card__image" data-zoom aria-label="Ver a foto de Clínicas em tela cheia">
             <img src="clinicas.jpg" alt="Recepção de clínica com atendente organizando agenda" loading="lazy" width="900" height="600">
-          </div>
+          </button>
           <h3>Clínicas</h3>
           <p>Reduza a ansiedade da sala de espera.</p>
         </article>
         <article class="use-card reveal">
-          <div class="use-card__image">
+          <button type="button" class="use-card__image" data-zoom aria-label="Ver a foto de Eventos em tela cheia">
             <img src="eventos.jpg" alt="Feira com diversas barracas e público circulando" loading="lazy" width="900" height="1198">
-          </div>
+          </button>
           <h3>Eventos</h3>
           <p>Controle o acesso e o fluxo de pessoas.</p>
         </article>
@@ -408,6 +408,22 @@
     <p class="footer__copy">© 2026 FilaFácil — Projeto desenvolvido com HTML, CSS e JavaScript.</p>
   </div>
 </footer>
+
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-labelledby="lbTitle" hidden>
+  <button class="lightbox__close" type="button" data-lb="close" aria-label="Fechar">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+  </button>
+  <button class="lightbox__nav lightbox__nav--prev" type="button" data-lb="prev" aria-label="Foto anterior">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+  </button>
+  <figure class="lightbox__figure">
+    <img id="lbImg" alt="">
+    <figcaption><strong id="lbTitle"></strong><span id="lbText"></span><span class="lightbox__count" id="lbCount"></span></figcaption>
+  </figure>
+  <button class="lightbox__nav lightbox__nav--next" type="button" data-lb="next" aria-label="Próxima foto">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+  </button>
+</div>
 
 <script src="script.js"></script>
 <script src="tema.js"></script>

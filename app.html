@@ -19,6 +19,11 @@
 </head>
 <body class="app">
 
+<div class="demo-bar" id="demoBar" hidden>
+  <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.94 15.5a2 2 0 0 0-1.44-1.44l-6.13-1.58a.5.5 0 0 1 0-.96L8.5 9.94a2 2 0 0 0 1.44-1.44l1.58-6.13a.5.5 0 0 1 .96 0l1.58 6.13a2 2 0 0 0 1.44 1.44l6.13 1.58a.5.5 0 0 1 0 .96l-6.13 1.58a2 2 0 0 0-1.44 1.44l-1.58 6.13a.5.5 0 0 1-.96 0z"/><path d="M20 3v4M22 5h-4M4 17v2M5 18H3"/></svg>Modo visitante: dados de exemplo, salvos só neste navegador.</span>
+  <button type="button" id="btnDemoCriar">Criar minha conta</button>
+</div>
+
 <header class="header">
   <div class="container header__inner">
     <a href="index.html" class="brand">
@@ -178,6 +183,11 @@
           <p class="form__error" role="alert" hidden></p>
           <button class="btn btn--primary btn--lg btn--block" type="submit">Salvar nova senha</button>
         </form>
+      </div>
+
+      <div class="demo-cta" id="demoCta">
+        <button class="btn btn--ghost btn--block" id="btnDemo" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.94 15.5a2 2 0 0 0-1.44-1.44l-6.13-1.58a.5.5 0 0 1 0-.96L8.5 9.94a2 2 0 0 0 1.44-1.44l1.58-6.13a.5.5 0 0 1 .96 0l1.58 6.13a2 2 0 0 0 1.44 1.44l6.13 1.58a.5.5 0 0 1 0 .96l-6.13 1.58a2 2 0 0 0-1.44 1.44l-1.58 6.13a.5.5 0 0 1-.96 0z"/><path d="M20 3v4M22 5h-4M4 17v2M5 18H3"/></svg>Entrar como visitante</button>
+        <p>Abre o painel de uma barbearia de exemplo, com dados salvos só neste navegador.</p>
       </div>
     </div>
   </section>
@@ -429,6 +439,7 @@
     <button class="modal__close" type="button" data-close-modal aria-label="Fechar">×</button>
     <h2 class="modal__title" id="qrTitle">QR code da fila</h2>
     <p class="card__text">Os clientes apontam a câmera do celular para o código, criam a conta (ou entram) e pegam a senha.</p>
+    <p class="notice-line notice-line--warn" id="qrDemoNote" hidden>No modo visitante este QR code é só um exemplo: ele passa a funcionar quando você cria a sua conta.</p>
     <div class="qr-box" id="qrBox"></div>
     <div class="copy-row">
       <input id="qrLink" readonly aria-label="Link da fila">
@@ -450,6 +461,7 @@
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js" integrity="sha384-mZT2gIty7ZDdOGkxfP6joZcYdMW1Jvj9dRlfpTmaJAKKXTqzygtB22k7FLe+KZC1" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="demo.js"></script>
 <script src="api.js"></script>
 <script src="app.js"></script>
 <script src="tema.js"></script>

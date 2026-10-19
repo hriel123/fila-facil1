@@ -60,6 +60,13 @@ const FF = (() => {
   }
 
   async function request(path, { method = "GET", body, auth = true, timeout = 75000, headers: extra = {} } = {}) {
+    if (typeof FFDemo !== "undefined" && FFDemo.handles(path)) {
+      try {
+        return FFDemo.request(path, { method, body });
+      } catch (err) {
+        throw new ApiError(err.status || 500, err.code || "error");
+      }
+    }
     const headers = { ...extra };
     if (body !== undefined) headers["Content-Type"] = "application/json";
     const token = getToken();
