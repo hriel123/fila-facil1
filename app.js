@@ -315,6 +315,16 @@
     return showCustomer();
   }
 
+  document.querySelectorAll("[data-show-password]").forEach((b) => {
+    b.addEventListener("click", () => {
+      const show = b.textContent === "Mostrar";
+      b.closest("form").querySelectorAll('input[name="password"], input[name="confirm"]').forEach((i) => { i.type = show ? "text" : "password"; });
+      b.textContent = show ? "Ocultar" : "Mostrar";
+      b.setAttribute("aria-label", show ? "Ocultar a senha" : "Mostrar a senha");
+      b.previousElementSibling.focus();
+    });
+  });
+
   document.querySelectorAll("[data-auth-tab]").forEach((b) => {
     b.addEventListener("click", () => switchAuthTab(b.dataset.authTab));
   });
