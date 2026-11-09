@@ -15,6 +15,10 @@ router.use(async (req, res, next) => {
   next();
 });
 
+function callDays(now = new Date()) {
+  return { in: [today(new Date(now.getTime() - 24 * 60 * 60 * 1000)), today(now)] };
+}
+
 function round1(value) {
   return value === null ? null : Math.round(value * 10) / 10;
 }
@@ -46,8 +50,13 @@ function panelTicket(ticket) {
 
 async function panelState(establishment, counter = 1) {
   const day = today();
-  const [active, finished, avg] = await Promise.all([
+  const [active, calling, finished, avg] = await Promise.all([
     activeTickets(establishment.id, day),
+    prisma.ticket.findMany({
+      where: { establishmentId: establishment.id, day: callDays(), status: 'CALLED' },
+      orderBy: [{ day: 'asc' }, { number: 'asc' }],
+      include: { user: { select: { name: true } } },
+    }),
     prisma.ticket.findMany({
       where: { establishmentId: establishment.id, day, status: { in: ['DONE', 'NO_SHOW'] } },
       orderBy: { finishedAt: 'desc' },
@@ -55,10 +64,9 @@ async function panelState(establishment, counter = 1) {
     }),
     serviceMinutes(establishment, day),
   ]);
-  const calling = active.filter((t) => t.status === 'CALLED');
   const current = calling.find((t) => (t.counter ?? 1) === counter) ?? null;
   const waiting = active.filter((t) => t.status === 'WAITING');
-  const called = [...finished, ...calling].filter((t) => t.calledAt);
+  const called = [...finished, ...calling.filter((t) => t.day === day)].filter((t) => t.calledAt);
   const services = finished.filter((t) => t.status === 'DONE' && t.calledAt && t.finishedAt);
 
   return {
@@ -98,9 +106,9 @@ async function act(req, res, action) {
   res.json(await panelState(establishment, counter));
 }
 
-function closeCurrent(tx, establishmentId, day, now, counter, status) {
+function closeCurrent(tx, establishmentId, now, counter, status) {
   return tx.ticket.updateMany({
-    where: { establishmentId, day, status: 'CALLED', counter },
+    where: { establishmentId, day: callDays(now), status: 'CALLED', counter },
     data: { status, finishedAt: now },
   });
 }
@@ -114,7 +122,7 @@ router.get('/', async (req, res) => {
 router.post('/next', (req, res) =>
   act(req, res, async (tx, day, now, counter) => {
     const id = req.establishment.id;
-    await closeCurrent(tx, id, day, now, counter, 'DONE');
+    await closeCurrent(tx, id, now, counter, 'DONE');
     const next = await tx.ticket.findFirst({ where: { establishmentId: id, day, status: 'WAITING' }, orderBy: { number: 'asc' } });
     if (next) {
       await tx.ticket.update({ where: { id: next.id }, data: { status: 'CALLED', counter, calledAt: now, lastCallAt: now, callCount: 1 } });
@@ -124,15 +132,15 @@ router.post('/next', (req, res) =>
 router.post('/recall', (req, res) =>
   act(req, res, (tx, day, now, counter) =>
     tx.ticket.updateMany({
-      where: { establishmentId: req.establishment.id, day, status: 'CALLED', counter },
+      where: { establishmentId: req.establishment.id, day: callDays(now), status: 'CALLED', counter },
       data: { callCount: { increment: 1 }, lastCallAt: now },
     })));
 
 router.post('/finish', (req, res) =>
-  act(req, res, (tx, day, now, counter) => closeCurrent(tx, req.establishment.id, day, now, counter, 'DONE')));
+  act(req, res, (tx, day, now, counter) => closeCurrent(tx, req.establishment.id, now, counter, 'DONE')));
 
 router.post('/no-show', (req, res) =>
-  act(req, res, (tx, day, now, counter) => closeCurrent(tx, req.establishment.id, day, now, counter, 'NO_SHOW')));
+  act(req, res, (tx, day, now, counter) => closeCurrent(tx, req.establishment.id, now, counter, 'NO_SHOW')));
 
 // Senha avulsa, para quem chega sem celular ou sem conta.
 router.post('/tickets', async (req, res) => {
@@ -180,7 +188,7 @@ router.patch('/settings', async (req, res) => {
     if (!Number.isInteger(counters) || counters < 1 || counters > 20) return res.status(400).json({ error: 'counters must be 1 to 20' });
     // Não deixa sumir um guichê que ainda está atendendo alguém.
     const busy = await prisma.ticket.findFirst({
-      where: { establishmentId: req.establishment.id, day: today(), status: 'CALLED', counter: { gt: counters } },
+      where: { establishmentId: req.establishment.id, day: callDays(), status: 'CALLED', counter: { gt: counters } },
     });
     if (busy) return res.status(409).json({ error: 'counter busy', counter: busy.counter });
     data.counters = counters;
