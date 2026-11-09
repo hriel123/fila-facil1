@@ -681,7 +681,7 @@ input { font-family: inherit; }
   padding: 10px 12px;
   font-size: 0.95rem;
 }
-.settings-card__field input:focus { border-color: var(--accent-line); outline: none; }
+.settings-card__field input:focus { border-color: var(--accent-text); box-shadow: 0 0 0 1px var(--accent-text); outline: none; }
 
 /* Custom number stepper — replaces native browser spin buttons */
 .number-stepper {
@@ -708,7 +708,8 @@ input { font-family: inherit; }
   margin: 0;
 }
 .number-stepper input:focus {
-  border-color: var(--accent-line);
+  border-color: var(--accent-text);
+  box-shadow: 0 0 0 1px var(--accent-text);
   outline: none;
 }
 .number-stepper__controls {

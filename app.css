@@ -168,8 +168,8 @@ body.app {
 .code-form input:focus,
 .walkin input:focus {
   outline: none;
-  border-color: var(--accent-line);
-  box-shadow: 0 0 0 3px var(--accent-dim);
+  border-color: var(--accent-text);
+  box-shadow: 0 0 0 1px var(--accent-text);
 }
 .field--inline { flex-direction: row; align-items: center; gap: 10px; }
 .field .number-stepper input { padding-right: 46px; font-family: var(--font-mono); }
@@ -316,7 +316,7 @@ body.app {
   font-size: 1rem;
   padding: 13px 14px;
 }
-.guest-card__row input:focus { outline: none; border-color: var(--accent-line); box-shadow: 0 0 0 3px var(--accent-dim); }
+.guest-card__row input:focus { outline: none; border-color: var(--accent-text); box-shadow: 0 0 0 1px var(--accent-text); }
 .guest-card .notice-line { margin: 0; }
 .auth-divider {
   display: flex;
