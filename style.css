@@ -15,12 +15,14 @@
 
   --text: #f2f3f4;
   --text-dim: #9aa1ab;
-  --text-faint: #666d76;
+  --text-faint: #858c95;
 
   --accent: #ffb020;
   --accent-strong: #ffc55a;
   --accent-dim: rgba(255, 176, 32, 0.12);
   --accent-line: rgba(255, 176, 32, 0.35);
+  --accent-text: var(--accent);
+  --accent-text-hover: var(--accent-strong);
 
   --teal: #5fd1c4;
 
@@ -61,14 +63,16 @@
 
   --text: #17191c;
   --text-dim: #545b65;
-  --text-faint: #80868f;
+  --text-faint: #636973;
 
   --accent: #d08400;
   --accent-strong: #b87400;
   --accent-dim: rgba(208, 132, 0, 0.12);
   --accent-line: rgba(208, 132, 0, 0.4);
+  --accent-text: #8d5600;
+  --accent-text-hover: #6f4600;
 
-  --teal: #0f8b7d;
+  --teal: #0c7a6e;
 
   --shadow-md: 0 12px 32px rgba(60, 45, 15, 0.1);
   --shadow-lg: 0 24px 64px rgba(60, 45, 15, 0.14);
@@ -183,7 +187,7 @@ input { font-family: inherit; }
   color: var(--text);
   border-color: var(--border);
 }
-.btn--ghost:hover { border-color: var(--accent-line); color: var(--accent-strong); }
+.btn--ghost:hover { border-color: var(--accent-line); color: var(--accent-text-hover); }
 
 .btn--outline {
   background: transparent;
@@ -331,7 +335,7 @@ input { font-family: inherit; }
   font-size: 0.78rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--accent-text);
   background: var(--accent-dim);
   border: 1px solid var(--accent-line);
   padding: 6px 14px;
@@ -403,7 +407,7 @@ input { font-family: inherit; }
   font-weight: 700;
   font-size: 3.6rem;
   letter-spacing: 0.04em;
-  color: var(--accent);
+  color: var(--accent-text);
   text-shadow: 0 0 24px var(--glow);
   margin: 8px 0 2px;
 }
@@ -461,8 +465,8 @@ input { font-family: inherit; }
   color: var(--text-dim);
   font-size: 1.02rem;
 }
-.link-accent { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
-.link-accent:hover { color: var(--accent-strong); }
+.link-accent { color: var(--accent-text); text-decoration: underline; text-underline-offset: 3px; }
+.link-accent:hover { color: var(--accent-text-hover); }
 
 .grid { display: grid; gap: 22px; }
 .grid--3 { grid-template-columns: repeat(3, 1fr); }
@@ -484,7 +488,7 @@ input { font-family: inherit; }
 .step-card:hover { transform: translateY(-4px); border-color: var(--accent-line); }
 .step-card__index {
   font-family: var(--font-mono);
-  color: var(--accent);
+  color: var(--accent-text);
   font-size: 0.85rem;
   letter-spacing: 0.08em;
   margin-bottom: 18px;
@@ -565,7 +569,7 @@ input { font-family: inherit; }
   font-family: var(--font-mono);
   font-weight: 700;
   font-size: 4.4rem;
-  color: var(--accent);
+  color: var(--accent-text);
   text-shadow: 0 0 30px var(--glow);
   transition: opacity 0.2s ease, transform 0.2s ease;
 }
@@ -783,7 +787,7 @@ input { font-family: inherit; }
   font-family: var(--font-display);
   font-size: clamp(2rem, 3.4vw, 2.6rem);
   font-weight: 700;
-  color: var(--accent);
+  color: var(--accent-text);
   transition: opacity 0.2s ease;
 }
 .stat__label { color: var(--text-dim); font-size: 0.9rem; }

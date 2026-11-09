@@ -19,8 +19,9 @@
     --border: #262b31;
     --text: #f2f3f4;
     --text-dim: #9aa1ab;
-    --text-faint: #666d76;
+    --text-faint: #858c95;
     --accent: #ffb020;
+    --accent-text: #ffb020;
     --accent-line: rgba(255, 176, 32, 0.35);
     --teal: #5fd1c4;
     --warm: #17140d;
@@ -40,8 +41,9 @@
     --border: #ddd6c9;
     --text: #17191c;
     --text-dim: #545b65;
-    --text-faint: #80868f;
+    --text-faint: #636973;
     --accent: #d08400;
+    --accent-text: #8d5600;
     --accent-line: rgba(208, 132, 0, 0.4);
     --teal: #0f8b7d;
     --warm: #fff6e3;
@@ -109,7 +111,7 @@
     font-weight: 700;
     font-size: clamp(5rem, 17vw, 20rem);
     line-height: 1.05;
-    color: var(--accent);
+    color: var(--accent-text);
     text-shadow: 0 0 6vw var(--glow);
     letter-spacing: 0.04em;
   }
@@ -151,7 +153,7 @@
   .tv__join-title { font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: clamp(1.1rem, 2vw, 2.4rem); line-height: 1.2; }
   .tv__join-text { color: var(--text-dim); font-size: clamp(0.9rem, 1.4vw, 1.6rem); margin-top: 1vh; }
   .tv__waiting { margin-top: 2vh; color: var(--text-dim); font-size: clamp(1rem, 1.6vw, 1.9rem); }
-  .tv__waiting strong { font-family: "JetBrains Mono", monospace; color: var(--accent); font-size: 1.4em; }
+  .tv__waiting strong { font-family: "JetBrains Mono", monospace; color: var(--accent-text); font-size: 1.4em; }
   .tv__closed { color: var(--text-faint); font-size: clamp(1rem, 1.6vw, 1.9rem); }
   .tv__status {
     position: fixed; left: 50%; bottom: 2vh; transform: translateX(-50%);
