@@ -12,6 +12,8 @@ const FFDemo = (() => {
   const KEY = "filafacil:demo";
   const NAMES = ["Rita Gomes", "João Pedro", "Camila Rocha", "Diego Santos", "Larissa Melo", "Paulo Sérgio", "Beatriz Nunes", "Felipe Araújo", "Sandra Reis", "Vinícius Lima"];
   const MIN = 60000;
+  const TIME_ZONE = "America/Fortaleza";
+  const hourFormat = new Intl.DateTimeFormat("en-GB", { hour: "2-digit", hourCycle: "h23", timeZone: TIME_ZONE });
 
   function lsGet(key) {
     try { return localStorage.getItem(key); } catch { return null; }
@@ -29,7 +31,7 @@ const FFDemo = (() => {
   }
 
   function dayOf(date) {
-    return new Date(date).toLocaleDateString("en-CA");
+    return new Date(date).toLocaleDateString("en-CA", { timeZone: TIME_ZONE });
   }
 
   function code(prefix, number) {
@@ -233,7 +235,7 @@ const FFDemo = (() => {
     let seedValue = [...day].reduce((sum, ch) => (sum * 31 + ch.charCodeAt(0)) % 233280, 7);
     const rnd = () => { seedValue = (seedValue * 9301 + 49297) % 233280; return seedValue / 233280; };
     const tickets = [];
-    const start = new Date(`${day}T08:00:00`).getTime();
+    const start = new Date(`${day}T08:00:00-03:00`).getTime();
     const total = 12 + Math.floor(rnd() * 10);
     let clock = start;
     const free = [start, start];
@@ -269,7 +271,7 @@ const FFDemo = (() => {
     const services = rows.filter((r) => r.serviceMinutes !== null).map((r) => r.serviceMinutes);
     const counts = new Map();
     for (const t of tickets) {
-      const hour = new Date(t.createdAt).getHours();
+      const hour = Number(hourFormat.format(t.createdAt));
       counts.set(hour, (counts.get(hour) ?? 0) + 1);
     }
     const hours = [...counts.keys()];

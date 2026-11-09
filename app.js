@@ -11,6 +11,7 @@
   const params = new URLSearchParams(location.search);
   const filaCode = (params.get("e") || "").trim().toUpperCase();
   const resetToken = params.get("redefinir") || "";
+  const TIME_ZONE = "America/Fortaleza";
 
   const STATUS = {
     WAITING: "Aguardando",
@@ -78,7 +79,7 @@
   }
 
   function hhmm(iso) {
-    return iso ? new Date(iso).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }) : "—";
+    return iso ? new Date(iso).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", timeZone: TIME_ZONE }) : "—";
   }
 
   function ago(iso) {
@@ -89,7 +90,7 @@
   }
 
   function localDay(date = new Date()) {
-    return date.toLocaleDateString("en-CA");
+    return date.toLocaleDateString("en-CA", { timeZone: TIME_ZONE });
   }
 
   function startPolling(fn, ms) {
