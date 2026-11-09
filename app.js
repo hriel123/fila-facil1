@@ -674,8 +674,10 @@
     setTimeout(FF.chime, 1700);
     if (navigator.vibrate) navigator.vibrate([400, 200, 400, 200, 900]);
     flashTitle(`É a sua vez! ${t.code}`);
+    const where = t.counters > 1 && t.counter ? `Dirija-se ao guichê ${t.counter}.` : "Dirija-se ao atendimento.";
+    $("callAlert").textContent = "";
+    setTimeout(() => { $("callAlert").textContent = `É a sua vez! Senha ${t.code}. ${where}`; }, 100);
     if ("Notification" in window && Notification.permission === "granted") {
-      const where = t.counters > 1 && t.counter ? `Dirija-se ao guichê ${t.counter}.` : "Dirija-se ao atendimento.";
       const options = { body: `Senha ${t.code} · ${t.establishment.name}. ${where}`, icon: "favicon.png", tag: `filafacil-${t.id}`, renotify: true, data: { url: `app.html?t=${t.id}` } };
       const reg = await registerWorker();
       try {
