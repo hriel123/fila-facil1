@@ -188,6 +188,10 @@
           } catch { /* chave antiga ou senha de outro dia: segue para pegar outra */ }
         }
       }
+      if (!location.search) {
+        const guestTicket = (await Promise.all(guestList().map((g) => guestRequest(g).catch(() => null)))).find((t) => t && isActive(t));
+        if (guestTicket) return showTicket(guestTicket.id, guestTicket);
+      }
       return showAuth(fila);
     }
     if (user.role === "OWNER") return showPanel();
@@ -672,7 +676,7 @@
     flashTitle(`É a sua vez! ${t.code}`);
     if ("Notification" in window && Notification.permission === "granted") {
       const where = t.counters > 1 && t.counter ? `Dirija-se ao guichê ${t.counter}.` : "Dirija-se ao atendimento.";
-      const options = { body: `Senha ${t.code} · ${t.establishment.name}. ${where}`, icon: "favicon.png", tag: `filafacil-${t.id}`, renotify: true };
+      const options = { body: `Senha ${t.code} · ${t.establishment.name}. ${where}`, icon: "favicon.png", tag: `filafacil-${t.id}`, renotify: true, data: { url: `app.html?t=${t.id}` } };
       const reg = await registerWorker();
       try {
         if (reg) await reg.showNotification("É a sua vez!", options);
