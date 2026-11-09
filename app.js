@@ -1048,7 +1048,7 @@
     report.tickets.forEach((t) => {
       lines.push([t.code, ticketName(t), STATUS[t.status], t.counter ?? "", hhmm(t.createdAt), hhmm(t.calledAt), hhmm(t.finishedAt), num(t.waitMinutes), num(t.serviceMinutes)]);
     });
-    const csv = lines.map((row) => row.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(";")).join("\r\n");
+    const csv = lines.map((row) => row.map((v) => `"${String(v).replace(/^[=+\-@\t\r]/, "'$&").replace(/"/g, '""')}"`).join(";")).join("\r\n");
     const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
