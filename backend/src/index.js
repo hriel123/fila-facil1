@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
 import 'dotenv/config';
 import rateLimit from 'express-rate-limit';
 import { Prisma } from '@prisma/client';
@@ -32,6 +33,7 @@ const pollLimiter = rateLimit({
 const app = express();
 
 app.set('trust proxy', 1);
+app.use(helmet());
 app.use(cors({ origin: allowedOrigins }));
 app.use(express.json({ limit: '20kb' }));
 
