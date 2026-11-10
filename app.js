@@ -878,6 +878,8 @@
     $("qCount").textContent = String(p.waiting.length);
     $("qEmpty").hidden = p.waiting.length > 0;
     const list = $("qList");
+    const focused = list.contains(document.activeElement) ? document.activeElement : null;
+    const focusIndex = focused ? [...list.querySelectorAll("button")].indexOf(focused) : -1;
     list.replaceChildren();
     p.waiting.forEach((t, i) => {
       const li = el("li", "q-item");
@@ -887,10 +889,19 @@
       const remove = el("button", "q-item__remove", "×");
       remove.type = "button";
       remove.setAttribute("aria-label", `Tirar a senha ${t.code} da fila`);
+      remove.dataset.id = String(t.id);
       remove.addEventListener("click", () => cancelTicket(t));
       li.append(info, remove);
       list.append(li);
     });
+    if (focused) {
+      const buttons = list.querySelectorAll("button");
+      (list.querySelector(`[data-id="${focused.dataset.id}"]`) || buttons[Math.min(focusIndex, buttons.length - 1)] || $("btnWalkIn")).focus();
+    }
+    const nowFocus = document.activeElement;
+    if (nowFocus && nowFocus.disabled && nowFocus.closest(".now-card")) {
+      [$("btnNext"), $("btnFinish"), $("btnRecall"), $("btnNoShow"), $("btnWalkIn")].find((b) => !b.disabled && !b.hidden)?.focus();
+    }
 
     $("recentBox").hidden = p.recent.length === 0;
     const recent = $("recentList");
@@ -907,6 +918,7 @@
 
   async function panelAction(path, options = {}) {
     const buttons = document.querySelectorAll(".now-card .btn");
+    const focused = document.activeElement;
     buttons.forEach((b) => { b.disabled = true; });
     try {
       const p = await FF.request(path, { method: "POST", ...options, body: { ...options.body, counter: myCounter } });
@@ -918,6 +930,9 @@
       return null;
     } finally {
       if (panel) renderPanel(panel);
+      if (focused && focused.closest(".now-card")) {
+        [focused, $("btnNext"), $("btnFinish"), $("btnRecall"), $("btnNoShow"), $("btnWalkIn")].find((b) => !b.disabled && !b.hidden)?.focus();
+      }
     }
   }
 
