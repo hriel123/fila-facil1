@@ -33,9 +33,12 @@ services:
   - type: web
     name: fila-facil-app
     runtime: static
-    buildCommand: mkdir -p publico && cp *.html *.js *.css *.jpg favicon.png publico/
+    buildCommand: mkdir -p publico/docs && cp *.html *.js *.css *.jpg favicon.png robots.txt sitemap.xml publico/ && cp docs/painel.webp publico/docs/
     staticPublishPath: publico
     headers:
       - path: /*
         name: Cache-Control
         value: no-cache
+      - path: /*
+        name: Content-Security-Policy
+        value: "default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com 'sha256-8KnXUnHdoE9f3EPvZip+tDs50s7OOJi4opR02/huI3k=' 'sha256-ltfMlPA+3UAAevVeUZmc+pLXp3zBj+WVX77a+bqJRT4=' 'sha256-qOhFsq0QMV2REqNwk5hGH5bZE9SkX6gt6yeyKdYPv+U='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self'; connect-src 'self' https://fila-facil-api.onrender.com; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"

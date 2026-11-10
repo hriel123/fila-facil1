@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://fila-facil-app.onrender.com/sitemap.xml
