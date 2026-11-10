@@ -13,15 +13,16 @@
 <script>document.documentElement.classList.add("js")</script>
 <script>if(location.hostname==="hriel123.github.io")location.replace("https://fila-facil-app.onrender.com"+location.pathname.replace(/^\/fila-facil1/,"")+location.search+location.hash);</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FilaFácil — Organize sua fila. Simplifique seu atendimento.</title>
+<title>FilaFácil | Senha pelo celular e fila organizada para pequenos negócios</title>
+<link rel="canonical" href="https://fila-facil-app.onrender.com/">
 <meta name="description" content="FilaFácil é uma solução simples para organizar filas de atendimento e proporcionar uma experiência melhor para clientes e atendentes.">
 <meta property="og:type" content="website">
-<meta property="og:title" content="FilaFácil — Organize sua fila. Simplifique seu atendimento.">
+<meta property="og:title" content="FilaFácil | Senha pelo celular e fila organizada para pequenos negócios">
 <meta property="og:description" content="Gerencie senhas, acompanhe atendimentos e reduza a confusão das filas usando apenas uma solução simples e intuitiva.">
 <meta property="og:url" content="https://fila-facil-app.onrender.com/">
 <meta property="og:image" content="https://fila-facil-app.onrender.com/og-image.jpg">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="FilaFácil — Organize sua fila. Simplifique seu atendimento.">
+<meta name="twitter:title" content="FilaFácil | Senha pelo celular e fila organizada para pequenos negócios">
 <meta name="twitter:description" content="Gerencie senhas, acompanhe atendimentos e reduza a confusão das filas usando apenas uma solução simples e intuitiva.">
 <meta name="twitter:image" content="https://fila-facil-app.onrender.com/og-image.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -84,28 +85,16 @@
     <div class="hero__glow" aria-hidden="true"></div>
     <div class="container hero__inner">
       <p class="eyebrow fade-in">Gestão de filas para pequenos negócios</p>
-      <h1 class="hero__title fade-in">Sua fila organizada<br>de forma simples.</h1>
-      <p class="hero__text fade-in">Gerencie senhas, acompanhe atendimentos e reduza a confusão das filas usando apenas uma solução simples e intuitiva.</p>
+      <h1 class="hero__title fade-in">O cliente pega a senha<br>pelo celular.</h1>
+      <p class="hero__text fade-in">Ele lê o QR code e entra na fila sem precisar de conta. Você chama o próximo de um ou de vários guichês, a TV anuncia a senha em voz alta e o relatório do dia sai em planilha.</p>
       <div class="hero__actions fade-in">
         <a href="app.html?criar=negocio" class="btn btn--primary btn--lg">Criar conta grátis</a>
-        <a href="#demonstracao" class="btn btn--ghost btn--lg">Ver demonstração</a>
+        <a href="app.html?demo" class="btn btn--ghost btn--lg">Ver o painel completo</a>
       </div>
 
-      <div class="hero__panel fade-in" aria-hidden="true">
-        <div class="ticket-mock">
-          <div class="ticket-mock__row">
-            <span class="ticket-mock__label">Senha atual</span>
-            <span class="ticket-mock__dot"></span>
-          </div>
-          <div class="ticket-mock__number">A023</div>
-          <div class="ticket-mock__status">Atendendo agora</div>
-          <div class="ticket-mock__divider"></div>
-          <div class="ticket-mock__row ticket-mock__row--footer">
-            <span>3 pessoas aguardando</span>
-            <span class="ticket-mock__pulse"></span>
-          </div>
-        </div>
-      </div>
+      <figure class="hero__shot fade-in">
+        <img src="docs/painel.webp" width="1440" height="900" alt="Painel do atendente com dados de exemplo: senha A009 sendo atendida no guichê 1, quatro clientes na fila com o tempo de chegada e os números do dia, como aguardando, atendidos e espera média">
+      </figure>
     </div>
   </section>
 
@@ -158,7 +147,7 @@
 
         <article class="feature-card reveal">
           <div class="feature-card__icon">
-            <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.6"/><path d="M12 7v5l3.5 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+            <svg viewBox="0 0 24 24" fill="none"><path d="M19.5 10A8 8 0 0 0 5 7.5M4.5 14A8 8 0 0 0 19 16.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M4.5 3.5v4h4M19.5 20.5v-4h-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </div>
           <h3 class="feature-card__title">Fila em tempo real</h3>
           <p class="feature-card__text">Atendente, clientes e TV veem a mesma fila, atualizada a cada poucos segundos.</p>
@@ -307,15 +296,6 @@
     </div>
   </section>
 
-  <!-- ===================== CTA ===================== -->
-  <section class="cta">
-    <div class="container cta__inner reveal">
-      <h2 class="cta__title">Pronto para organizar sua fila?</h2>
-      <p class="cta__text">Comece agora e transforme a experiência de atendimento do seu negócio.</p>
-      <a href="app.html?criar=negocio" class="btn btn--primary btn--lg">Criar conta grátis</a>
-    </div>
-  </section>
-
   <!-- ===================== ONDE USAR ===================== -->
   <section class="section" id="onde-usar">
     <div class="container">
@@ -386,6 +366,15 @@
     </div>
   </section>
 
+  <!-- ===================== CTA ===================== -->
+  <section class="cta">
+    <div class="container cta__inner reveal">
+      <h2 class="cta__title">Pronto para organizar sua fila?</h2>
+      <p class="cta__text">Crie a conta, imprima o cartaz com o QR code e chame a primeira senha ainda hoje.</p>
+      <a href="app.html?criar=negocio" class="btn btn--primary btn--lg">Criar conta grátis</a>
+    </div>
+  </section>
+
 </main>
 
 <!-- ===================== FOOTER ===================== -->
@@ -393,7 +382,7 @@
   <div class="container footer__inner">
     <div class="footer__brand">
       <span class="brand__name">FilaFácil</span>
-      <p>Organizando filas. Melhorando experiências.</p>
+      <p>Senha pelo celular, vários guichês e TV de chamada com voz.</p>
     </div>
 
     <nav class="footer__links">
@@ -406,7 +395,8 @@
     </nav>
   </div>
   <div class="container">
-    <p class="footer__copy">© 2026 FilaFácil — Projeto desenvolvido com HTML, CSS e JavaScript.</p>
+    <p class="footer__copy">© 2026 FilaFácil. Feito por <a href="https://hriel123.github.io/Portifolio/">Hariel Silva Fabrício</a>. Código no <a href="https://github.com/hriel123/fila-facil1">GitHub</a>.<br>
+    Site em HTML, CSS e JavaScript; API em Node.js, Express e Prisma com PostgreSQL.</p>
   </div>
 </footer>
 
