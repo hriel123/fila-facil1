@@ -192,6 +192,7 @@
         const guestTicket = (await Promise.all(guestList().map((g) => guestRequest(g).catch(() => null)))).find((t) => t && isActive(t));
         if (guestTicket) return showTicket(guestTicket.id, guestTicket);
       }
+      if (filaCode && !fila) $("authNoFila").hidden = false;
       return showAuth(fila);
     }
     if (user.role === "OWNER") return showPanel();
