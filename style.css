@@ -961,6 +961,8 @@ input { font-family: inherit; }
 @media (prefers-reduced-motion: reduce) {
   .fade-in, .reveal { animation: none !important; transition: none !important; opacity: 1 !important; transform: none !important; }
   .ticket-mock__pulse::after { animation: none; }
+  html { scroll-behavior: auto; }
+  .queue-chip { animation: none; }
 }
 
 /* =========================================================
