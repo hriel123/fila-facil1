@@ -55,15 +55,27 @@
     $("tvHint").textContent = f.current ? "Dirija-se ao atendimento" : "Aguardando a próxima chamada";
     $("tvWaiting").textContent = String(f.waiting);
 
+    const serving = f.counters > 1 ? (f.calling || []).filter((t) => t.counter) : [];
+    $("tvServingBox").hidden = !serving.length;
+    $("tvServing").replaceChildren(...serving.map((t) => {
+      const li = document.createElement("li");
+      const small = document.createElement("small");
+      small.textContent = `Guichê ${t.counter}`;
+      li.append(small, t.code);
+      return li;
+    }));
+
+    const inService = new Set((f.calling || []).map((t) => t.code));
+    const recent = f.recent.filter((r) => !inService.has(r.code)).slice(0, serving.length ? 2 : 4);
     const list = $("tvRecent");
     list.replaceChildren();
-    if (!f.recent.length) {
+    if (!recent.length) {
       const li = document.createElement("li");
       li.className = "is-empty";
       li.textContent = "Nenhuma ainda hoje";
       list.append(li);
     }
-    f.recent.forEach((r) => {
+    recent.forEach((r) => {
       const li = document.createElement("li");
       li.textContent = r.code;
       const c = counterOf(r.counter);
@@ -93,7 +105,11 @@
     lastCallId = callId;
   }
 
+  let busy = false;
+
   async function refresh() {
+    if (busy) return;
+    busy = true;
     try {
       render(await FF.request(`/public/${encodeURIComponent(code)}`, { auth: false, timeout: 20000 }));
       $("tvStatus").hidden = true;
@@ -104,6 +120,8 @@
         return;
       }
       $("tvStatus").hidden = false;
+    } finally {
+      busy = false;
     }
   }
 

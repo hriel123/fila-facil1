@@ -5,7 +5,7 @@
 <script>if(location.hostname==="hriel123.github.io")location.replace("https://fila-facil-app.onrender.com"+location.pathname.replace(/^\/fila-facil1/,"")+location.search+location.hash);</script>
 <script>try{if(localStorage.getItem("filafacil:tema")==="claro")document.documentElement.setAttribute("data-theme","light")}catch(e){}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FilaFácil — Tela de chamada</title>
+<title>Tela de chamada | FilaFácil</title>
 <meta name="filafacil-api" content="https://fila-facil-api.onrender.com">
 <meta name="theme-color" content="#0b0d0f">
 <link rel="icon" type="image/png" sizes="512x512" href="favicon.png">
@@ -160,6 +160,24 @@
     background: var(--status-bg); color: var(--status-text); border-radius: 999px; padding: 8px 18px; font-size: 1rem;
   }
 
+  .tv__serving { grid-template-columns: repeat(3, 1fr); }
+  .tv__serving li { color: var(--text); font-size: clamp(1.4rem, 2.8vw, 3.2rem); }
+  .tv__serving li small { color: var(--teal); }
+  .wake {
+    position: fixed; top: 16px; left: 50%; z-index: 20; transform: translateX(-50%);
+    width: min(440px, calc(100vw - 32px));
+    display: flex; gap: 14px; align-items: flex-start;
+    background: var(--surface); border: 1px solid var(--accent-line); border-radius: 16px; padding: 16px 18px;
+  }
+  .wake strong { display: block; }
+  .wake p { margin-top: 4px; color: var(--text-dim); font-size: 0.88rem; line-height: 1.45; }
+  .wake small { display: block; margin-top: 8px; color: var(--text-faint); font-size: 0.8rem; font-variant-numeric: tabular-nums; }
+  .spinner {
+    width: 22px; height: 22px; margin-top: 2px; flex-shrink: 0; border-radius: 50%;
+    border: 2.5px solid var(--border); border-top-color: var(--accent); animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
   .tv-start {
     position: fixed; inset: 0; z-index: 10;
     display: grid; place-items: center; text-align: center;
@@ -214,6 +232,10 @@
       <p class="tv__hint" id="tvHint">Aguardando a primeira chamada</p>
     </section>
     <aside class="tv__side">
+      <div class="tv__box" id="tvServingBox" hidden>
+        <p class="tv__box-title">Em atendimento</p>
+        <ul class="tv__recent tv__serving" id="tvServing"></ul>
+      </div>
       <div class="tv__box">
         <p class="tv__box-title">Últimas chamadas</p>
         <ul class="tv__recent" id="tvRecent"></ul>
@@ -229,6 +251,15 @@
     </aside>
   </main>
   <p class="tv__status" id="tvStatus" hidden>Sem conexão. Tentando de novo…</p>
+</div>
+
+<div class="wake" id="wakeNotice" role="status" aria-live="polite" hidden>
+  <span class="spinner" aria-hidden="true"></span>
+  <div>
+    <strong>Ligando o servidor…</strong>
+    <p>Ele fica em repouso quando ninguém está usando e leva até 1 minuto para voltar. Aguarde, não precisa recarregar a página.</p>
+    <small data-wake-time></small>
+  </div>
 </div>
 
 <div class="tv-start" id="tvStart">
