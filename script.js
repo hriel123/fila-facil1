@@ -282,14 +282,12 @@
      Header: sombra/estado ao rolar
   --------------------------------------------------------- */
   const header = document.getElementById("header");
-  let lastScrollY = window.scrollY;
 
   window.addEventListener(
     "scroll",
     () => {
       const y = window.scrollY;
       header.style.boxShadow = y > 12 ? "0 8px 24px rgba(0,0,0,0.35)" : "none";
-      lastScrollY = y;
     },
     { passive: true }
   );

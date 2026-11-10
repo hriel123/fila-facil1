@@ -94,7 +94,6 @@ async function panelState(establishment, counter = 1) {
   };
 }
 
-// Executa uma ação com a fila travada e devolve o painel atualizado.
 // Executa uma ação do guichê com a fila travada e devolve o painel atualizado.
 async function act(req, res, action) {
   const counter = counterOf(req);
