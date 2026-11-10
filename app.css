@@ -115,6 +115,7 @@ body.app {
   margin: 14px 0;
 }
 .notice-line--warn { background: var(--warn-dim); color: var(--warn-text); border: 1px solid rgba(248, 113, 113, 0.3); }
+.notice-line--info { background: var(--surface-2); color: var(--text-dim); border: 1px solid var(--border); }
 .notice-line--ok { background: var(--ok-dim); color: var(--ok-text); border: 1px solid rgba(74, 222, 128, 0.3); text-align: center; margin: 0; }
 
 /* ---------- Cards e textos ---------- */
@@ -623,9 +624,9 @@ body.app {
 .kpis strong { font-family: var(--font-mono); font-size: 1.45rem; color: var(--text); }
 .stat-strip span,
 .kpis span { font-size: 0.8rem; color: var(--text-faint); }
+.kpis div:last-child { grid-column: span 2; }
 
 #tabAtendimento { display: flex; flex-direction: column; }
-#tabAtendimento .stat-strip { order: 2; margin: 18px 0 0; }
 .panel-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; align-items: start; }
 
 .now-card {
@@ -768,7 +769,17 @@ kbd {
 .bars__value { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-dim); }
 .bars__label { font-size: 0.72rem; color: var(--text-faint); }
 
-.table-wrap { overflow-x: auto; margin: 0 -4px; }
+.table-hint { display: none; font-size: 0.8rem; color: var(--text-faint); margin-bottom: 8px; }
+.table-wrap {
+  overflow-x: auto;
+  margin: 0 -4px;
+  background:
+    linear-gradient(to left, transparent, var(--surface) 70%) left / 24px 100% no-repeat local,
+    linear-gradient(to right, transparent, var(--surface) 70%) right / 24px 100% no-repeat local,
+    radial-gradient(farthest-side at 0 50%, rgba(0, 0, 0, 0.3), transparent) left / 12px 100% no-repeat scroll,
+    radial-gradient(farthest-side at 100% 50%, rgba(0, 0, 0, 0.3), transparent) right / 12px 100% no-repeat scroll;
+}
+@media (max-width: 719px) { .table-hint { display: block; } }
 .r-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; min-width: 620px; }
 .r-table th {
   text-align: left;
@@ -885,9 +896,9 @@ kbd {
 
 @media print {
   @page { size: A4; margin: 18mm; }
-  body.app { background: #fff; }
-  body.app > *:not(.poster) { display: none !important; }
-  .poster {
+  body.app.is-poster { background: #fff; }
+  body.app.is-poster > *:not(.poster) { display: none !important; }
+  body.app.is-poster .poster {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -902,6 +913,7 @@ kbd {
   .poster__qr svg { width: 100%; height: auto; display: block; }
   .poster__steps { font-size: 14pt; max-width: 150mm; line-height: 1.5; }
   .poster__code { font-size: 13pt; color: #444; }
+  .poster__example { font-size: 13pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; border: 2px dashed #111; border-radius: 4mm; padding: 3mm 6mm; }
   .poster__code strong { font-family: var(--font-mono); letter-spacing: 0.12em; }
 }
 
@@ -915,10 +927,10 @@ kbd {
 }
 
 @media (min-width: 960px) {
-  #tabAtendimento .stat-strip { order: 0; margin: 0 0 18px; }
   .panel-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); }
   .now-card { position: sticky; top: 96px; padding: 30px; }
   .kpis { grid-template-columns: repeat(7, 1fr); }
+  .kpis div:last-child { grid-column: auto; }
 }
 
 @media (max-width: 380px) {

@@ -30,6 +30,12 @@
   /* ---------------------------------------------------------
      Utilidades
   --------------------------------------------------------- */
+  let baseTitle = "FilaFácil";
+  function setTitle(text) {
+    baseTitle = `${text} | FilaFácil`;
+    document.title = baseTitle;
+  }
+
   function show(viewId) {
     document.querySelectorAll(".view").forEach((v) => { v.hidden = v.id !== viewId; });
     window.scrollTo(0, 0);
@@ -309,7 +315,9 @@
       const active = b.dataset.authTab === tab;
       b.classList.toggle("is-active", active);
       b.setAttribute("aria-selected", String(active));
+      b.tabIndex = active ? 0 : -1;
     });
+    setTitle({ entrar: "Entrar", criar: "Criar conta", esqueci: "Esqueci minha senha", redefinir: "Nova senha" }[tab]);
     document.querySelector(".auth-card .tabs").hidden = tab !== "entrar" && tab !== "criar";
     $("formEntrar").hidden = tab !== "entrar";
     $("formCriar").hidden = tab !== "criar";
@@ -485,6 +493,7 @@
     render(fila);
     setError($("joinError"), null);
     show("vJoin");
+    setTitle("Pegar senha");
     startPolling(async () => {
       const f = await loadFila(fila.code);
       if (f) render(f);
@@ -537,6 +546,7 @@
     watchedGuest = user ? null : guestFor(id);
     maxAhead = 0;
     show("vTicket");
+    setTitle("Sua senha");
     const guest = watchedGuest;
     const refresh = async () => renderTicket(await (guest ? guestRequest(guest) : FF.request(`/tickets/${id}`)));
     if (initial) {
@@ -656,7 +666,7 @@
 
   let titleTimer = null;
   function flashTitle(text) {
-    const original = "FilaFácil";
+    const original = baseTitle;
     let on = false;
     let count = 0;
     clearInterval(titleTimer);
@@ -704,6 +714,7 @@
     history.replaceState(null, "", "app.html");
     $("custName").textContent = firstName(user.name);
     show("vCustomer");
+    setTitle("Minhas senhas");
     const refresh = async () => renderCustomer(await FF.request("/tickets"));
     try {
       await refresh();
@@ -829,7 +840,9 @@
       const active = b.dataset.ptab === tab;
       b.classList.toggle("is-active", active);
       b.setAttribute("aria-selected", String(active));
+      b.tabIndex = active ? 0 : -1;
     });
+    setTitle({ atendimento: "Painel", relatorio: "Relatório do dia", ajustes: "Ajustes" }[tab]);
     $("tabAtendimento").hidden = tab !== "atendimento";
     $("tabRelatorio").hidden = tab !== "relatorio";
     $("tabAjustes").hidden = tab !== "ajustes";
@@ -842,6 +855,22 @@
   }
 
   document.querySelectorAll("[data-ptab]").forEach((b) => b.addEventListener("click", () => switchPtab(b.dataset.ptab)));
+
+  document.querySelectorAll('[role="tablist"]').forEach((list) => {
+    list.addEventListener("keydown", (e) => {
+      const tabs = [...list.querySelectorAll('[role="tab"]')];
+      const at = tabs.indexOf(document.activeElement);
+      const step = { ArrowRight: 1, ArrowLeft: -1 }[e.key];
+      let next = null;
+      if (step) next = tabs[(at + step + tabs.length) % tabs.length];
+      else if (e.key === "Home") next = tabs[0];
+      else if (e.key === "End") next = tabs[tabs.length - 1];
+      if (at < 0 || !next) return;
+      e.preventDefault();
+      next.click();
+      next.focus();
+    });
+  });
 
   function ticketName(t) {
     if (t.name) return t.name;
@@ -1170,6 +1199,9 @@
     $("posterName").textContent = e.name;
     $("posterCode").textContent = e.code;
     $("posterQr").innerHTML = FF.qrSvg(FF.link("app.html", e.code)) || "";
+    $("posterExample").hidden = !FFDemo.active();
+    document.body.classList.add("is-poster");
+    window.addEventListener("afterprint", () => document.body.classList.remove("is-poster"), { once: true });
     window.print();
   });
 

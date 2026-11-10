@@ -20,7 +20,7 @@
 <body class="app">
 
 <div class="demo-bar" id="demoBar" hidden>
-  <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.94 15.5a2 2 0 0 0-1.44-1.44l-6.13-1.58a.5.5 0 0 1 0-.96L8.5 9.94a2 2 0 0 0 1.44-1.44l1.58-6.13a.5.5 0 0 1 .96 0l1.58 6.13a2 2 0 0 0 1.44 1.44l6.13 1.58a.5.5 0 0 1 0 .96l-6.13 1.58a2 2 0 0 0-1.44 1.44l-1.58 6.13a.5.5 0 0 1-.96 0z"/><path d="M20 3v4M22 5h-4M4 17v2M5 18H3"/></svg>Modo visitante: dados de exemplo, salvos só neste navegador.</span>
+  <span>Modo visitante: dados de exemplo, salvos só neste navegador.</span>
   <button type="button" id="btnDemoCriar">Criar minha conta</button>
 </div>
 
@@ -93,11 +93,11 @@
 
       <div class="auth-card">
         <div class="tabs" role="tablist" aria-label="Entrar ou criar conta">
-          <button class="tab is-active" role="tab" type="button" data-auth-tab="entrar" aria-selected="true">Entrar</button>
-          <button class="tab" role="tab" type="button" data-auth-tab="criar" aria-selected="false">Criar conta</button>
+          <button class="tab is-active" role="tab" type="button" id="tabBtnEntrar" data-auth-tab="entrar" aria-selected="true" aria-controls="formEntrar">Entrar</button>
+          <button class="tab" role="tab" type="button" id="tabBtnCriar" data-auth-tab="criar" aria-selected="false" aria-controls="formCriar" tabindex="-1">Criar conta</button>
         </div>
 
-        <form class="form" id="formEntrar" novalidate>
+        <form class="form" id="formEntrar" role="tabpanel" aria-labelledby="tabBtnEntrar" novalidate>
           <h1 class="auth-card__title">Bem-vindo de volta</h1>
           <label class="field">
             <span class="field__label">E-mail</span>
@@ -113,7 +113,7 @@
           <p class="form__switch">Ainda não tem conta? <button type="button" class="link-btn" data-auth-tab="criar">Criar conta</button></p>
         </form>
 
-        <form class="form" id="formCriar" novalidate hidden>
+        <form class="form" id="formCriar" role="tabpanel" aria-labelledby="tabBtnCriar" novalidate hidden>
           <h1 class="auth-card__title">Criar conta</h1>
           <div class="role-pick" role="radiogroup" aria-label="Tipo de conta">
             <label class="role-option">
@@ -186,7 +186,7 @@
       </div>
 
       <div class="demo-cta" id="demoCta">
-        <button class="btn btn--ghost btn--block" id="btnDemo" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.94 15.5a2 2 0 0 0-1.44-1.44l-6.13-1.58a.5.5 0 0 1 0-.96L8.5 9.94a2 2 0 0 0 1.44-1.44l1.58-6.13a.5.5 0 0 1 .96 0l1.58 6.13a2 2 0 0 0 1.44 1.44l6.13 1.58a.5.5 0 0 1 0 .96l-6.13 1.58a2 2 0 0 0-1.44 1.44l-1.58 6.13a.5.5 0 0 1-.96 0z"/><path d="M20 3v4M22 5h-4M4 17v2M5 18H3"/></svg>Entrar como visitante</button>
+        <button class="btn btn--ghost btn--block" id="btnDemo" type="button">Entrar como visitante</button>
         <p>Abre o painel de uma barbearia de exemplo, com dados salvos só neste navegador.</p>
       </div>
     </div>
@@ -281,13 +281,13 @@
     <p class="notice-line notice-line--warn" id="pClosedNotice" hidden>A fila está fechada: os clientes não conseguem pegar senha pelo celular.</p>
 
     <div class="tabs tabs--panel" role="tablist" aria-label="Seções do painel">
-      <button class="tab is-active" role="tab" type="button" data-ptab="atendimento" aria-selected="true">Atendimento</button>
-      <button class="tab" role="tab" type="button" data-ptab="relatorio" aria-selected="false">Relatório do dia</button>
-      <button class="tab" role="tab" type="button" data-ptab="ajustes" aria-selected="false">Ajustes</button>
+      <button class="tab is-active" role="tab" type="button" id="ptabAtendimento" data-ptab="atendimento" aria-selected="true" aria-controls="tabAtendimento">Atendimento</button>
+      <button class="tab" role="tab" type="button" id="ptabRelatorio" data-ptab="relatorio" aria-selected="false" aria-controls="tabRelatorio" tabindex="-1">Relatório do dia</button>
+      <button class="tab" role="tab" type="button" id="ptabAjustes" data-ptab="ajustes" aria-selected="false" aria-controls="tabAjustes" tabindex="-1">Ajustes</button>
     </div>
 
     <!-- Atendimento -->
-    <div class="ptab" id="tabAtendimento">
+    <div class="ptab" id="tabAtendimento" role="tabpanel" aria-labelledby="ptabAtendimento">
       <div class="stat-strip">
         <div><strong id="sWaiting">0</strong><span>aguardando</span></div>
         <div><strong id="sDone">0</strong><span>atendidos hoje</span></div>
@@ -339,7 +339,7 @@
     </div>
 
     <!-- Relatório -->
-    <div class="ptab" id="tabRelatorio" hidden>
+    <div class="ptab" id="tabRelatorio" role="tabpanel" aria-labelledby="ptabRelatorio" hidden>
       <div class="report-head">
         <label class="field field--inline">
           <span class="field__label">Dia</span>
@@ -362,6 +362,7 @@
       </div>
       <div class="card">
         <h2 class="card__title">Atendimentos</h2>
+        <p class="table-hint">Arraste a tabela para o lado para ver todas as colunas.</p>
         <div class="table-wrap">
           <table class="r-table">
             <thead><tr><th>Senha</th><th>Cliente</th><th>Situação</th><th>Guichê</th><th>Chegou</th><th>Chamada</th><th>Espera</th><th>Atendimento</th></tr></thead>
@@ -373,7 +374,7 @@
     </div>
 
     <!-- Ajustes -->
-    <div class="ptab" id="tabAjustes" hidden>
+    <div class="ptab" id="tabAjustes" role="tabpanel" aria-labelledby="ptabAjustes" hidden>
       <form class="card form" id="formAjustes" novalidate>
         <h2 class="card__title">Dados da fila</h2>
         <label class="field">
@@ -439,7 +440,7 @@
     <button class="modal__close" type="button" data-close-modal aria-label="Fechar">×</button>
     <h2 class="modal__title" id="qrTitle">QR code da fila</h2>
     <p class="card__text">Os clientes apontam a câmera do celular para o código, digitam o nome e pegam a senha, sem precisar de conta. Quem já tem conta também pode entrar com ela.</p>
-    <p class="notice-line notice-line--warn" id="qrDemoNote" hidden>No modo visitante este QR code é só um exemplo: ele passa a funcionar quando você cria a sua conta.</p>
+    <p class="notice-line notice-line--info" id="qrDemoNote" hidden>No modo visitante este QR code é só um exemplo: ele passa a funcionar quando você cria a sua conta.</p>
     <div class="qr-box" id="qrBox"></div>
     <div class="copy-row">
       <input id="qrLink" readonly aria-label="Link da fila">
@@ -451,6 +452,7 @@
 
 <!-- Cartaz para imprimir (só aparece na impressão) -->
 <div class="poster" id="poster" aria-hidden="true">
+  <p class="poster__example" id="posterExample" hidden>Exemplo do modo visitante: este QR code não abre uma fila de verdade.</p>
   <p class="poster__name" id="posterName"></p>
   <p class="poster__title">Pegue sua senha pelo celular</p>
   <div class="poster__qr" id="posterQr"></div>
