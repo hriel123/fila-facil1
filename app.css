@@ -184,9 +184,10 @@ body.app {
   box-shadow: 0 0 0 1px var(--accent-text);
 }
 .field--inline { flex-direction: row; align-items: center; gap: 10px; }
-.field .number-stepper input { padding-right: 46px; font-family: var(--font-mono); }
+.field .number-stepper input { padding-right: 88px; font-family: var(--font-mono); }
 
 .app-header__actions { display: flex; align-items: center; gap: 12px; }
+.app-user .btn, .panel-head__actions .btn { min-height: 44px; }
 .field--inline input { width: auto; padding: 9px 12px; font-size: 0.95rem; }
 
 .form__error {
@@ -222,7 +223,7 @@ body.app {
 .link-btn {
   background: none;
   border: 0;
-  padding: 0;
+  padding: 6px 2px;
   color: var(--accent-text);
   font-weight: 600;
   font-size: inherit;
@@ -247,7 +248,8 @@ body.app {
 .demo-bar button {
   background: none;
   border: 0;
-  padding: 4px 2px;
+  padding: 10px 6px;
+  margin: -6px 0;
   color: inherit;
   font: inherit;
   font-weight: 800;
@@ -354,8 +356,8 @@ body.app {
 .counter-pick__label { font-size: 0.8rem; color: var(--text-faint); }
 .counter-pick__btns { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
 .counter-pick__btn {
-  min-width: 40px;
-  height: 40px;
+  min-width: 44px;
+  height: 44px;
   padding: 0 10px;
   border-radius: 12px;
   border: 1px solid var(--border);
