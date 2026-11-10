@@ -1003,6 +1003,7 @@
     if (e.key !== "n" && e.key !== "N") return;
     if (e.ctrlKey || e.metaKey || e.altKey) return;
     if ($("vPanel").hidden || $("tabAtendimento").hidden) return;
+    if (document.querySelector(".modal:not([hidden])")) return;
     if (e.target.closest("input, textarea, select")) return;
     if (!$("btnNext").disabled) $("btnNext").click();
   });
@@ -1126,13 +1127,17 @@
   /* ---------------------------------------------------------
      QR code, cartaz e copiar link
   --------------------------------------------------------- */
+  let modalOpener = null;
+
   function openModal() {
+    modalOpener = document.activeElement;
     $("qrModal").hidden = false;
     $("qrModal").querySelector(".modal__close").focus();
   }
 
   function closeModal() {
     $("qrModal").hidden = true;
+    if (modalOpener) modalOpener.focus();
   }
 
   $("btnQr").addEventListener("click", () => {
@@ -1148,7 +1153,16 @@
 
   document.querySelectorAll("[data-close-modal]").forEach((b) => b.addEventListener("click", closeModal));
   $("qrModal").addEventListener("click", (e) => { if (e.target === $("qrModal")) closeModal(); });
-  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("qrModal").hidden) closeModal(); });
+  document.addEventListener("keydown", (e) => {
+    if ($("qrModal").hidden) return;
+    if (e.key === "Escape") closeModal();
+    else if (e.key === "Tab") {
+      const focusable = [...$("qrModal").querySelectorAll("button, input")];
+      const at = focusable.indexOf(document.activeElement);
+      e.preventDefault();
+      focusable[(at + (e.shiftKey ? -1 : 1) + focusable.length) % focusable.length].focus();
+    }
+  });
 
   $("btnPrint").addEventListener("click", () => {
     const e = panel.establishment;
