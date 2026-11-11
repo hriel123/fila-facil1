@@ -51,7 +51,7 @@ function newCode() {
 }
 
 function signToken(user) {
-  return jwt.sign({ userId: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '30d' });
+  return jwt.sign({ userId: user.id, role: user.role, tokenVersion: user.tokenVersion }, process.env.JWT_SECRET, { expiresIn: '30d' });
 }
 
 function publicUser(user) {
@@ -190,12 +190,12 @@ router.post('/reset', authLimiter, async (req, res) => {
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
-  await prisma.$transaction([
-    prisma.user.update({ where: { id: reset.userId }, data: { password: hashedPassword } }),
+  const [updated] = await prisma.$transaction([
+    prisma.user.update({ where: { id: reset.userId }, data: { password: hashedPassword, tokenVersion: { increment: 1 } } }),
     prisma.passwordReset.updateMany({ where: { userId: reset.userId, usedAt: null }, data: { usedAt: new Date() } }),
   ]);
 
-  res.json({ token: signToken(reset.user), user: publicUser(reset.user) });
+  res.json({ token: signToken(updated), user: publicUser(reset.user) });
 });
 
 router.get('/me', authMiddleware, async (req, res) => {

@@ -18,7 +18,7 @@ Servidor que guarda as contas, as filas e as senhas do FilaFácil. Há dois tipo
 | POST | `/auth/login` | todos | Devolve o token (`email`, `password`). Vale 30 dias |
 | GET | `/auth/me` | todos | Dados da conta logada |
 | POST | `/auth/forgot` | todos | Envia por e-mail um link para criar nova senha (`email`). Responde igual exista ou não a conta |
-| POST | `/auth/reset` | todos | Troca a senha com o código do link (`token`, `password`). O link vale 30 minutos e só funciona uma vez |
+| POST | `/auth/reset` | todos | Troca a senha com o código do link (`token`, `password`). O link vale 30 minutos e só funciona uma vez. Encerra as sessões abertas e devolve um token novo |
 | GET | `/public/:code` | página da fila e TV | Nome da fila, guichês, quantos aguardam, senha chamada (com o guichê) e últimas chamadas. Só códigos de senha, sem nomes |
 | POST | `/public/:code/tickets` | cliente sem conta | Pega senha só com `name`. Devolve a senha e uma chave que fica só no celular |
 | GET | `/public/tickets/:id` | cliente sem conta | A senha, com o cabeçalho `X-Ticket-Key: <chave>` |

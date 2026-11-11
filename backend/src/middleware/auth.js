@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
+import { prisma } from '../lib/prisma.js';
 
-export function authMiddleware(req, res, next) {
+export async function authMiddleware(req, res, next) {
   const authHeader = req.headers.authorization;
   const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null;
 
@@ -8,14 +9,21 @@ export function authMiddleware(req, res, next) {
     return res.status(401).json({ error: 'missing authorization token' });
   }
 
+  let payload;
   try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET);
-    req.userId = payload.userId;
-    req.role = payload.role;
-    next();
+    payload = jwt.verify(token, process.env.JWT_SECRET);
   } catch {
     return res.status(401).json({ error: 'invalid or expired token' });
   }
+
+  const user = await prisma.user.findUnique({ where: { id: payload.userId }, select: { tokenVersion: true } });
+  if (!user || user.tokenVersion !== (payload.tokenVersion ?? 0)) {
+    return res.status(401).json({ error: 'invalid or expired token' });
+  }
+
+  req.userId = payload.userId;
+  req.role = payload.role;
+  next();
 }
 
 export function requireRole(role) {
