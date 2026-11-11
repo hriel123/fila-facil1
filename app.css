@@ -314,6 +314,7 @@ body.app {
 .role-option__box small { color: var(--text-faint); font-size: 0.8rem; line-height: 1.35; }
 .role-option input:checked + .role-option__box { border-color: var(--accent); background: var(--accent-dim); }
 .role-option input:checked + .role-option__box svg { color: var(--accent); }
+.role-option input:checked + .role-option__box small { color: var(--text-dim); }
 .role-option input:focus-visible + .role-option__box { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 /* ---------- Senha sem conta ---------- */
