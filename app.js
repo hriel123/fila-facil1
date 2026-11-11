@@ -346,9 +346,8 @@
 
   document.querySelectorAll("[data-show-password]").forEach((b) => {
     b.addEventListener("click", () => {
-      const show = b.textContent === "Mostrar";
+      const show = b.previousElementSibling.type === "password";
       b.closest("form").querySelectorAll('input[name="password"], input[name="confirm"]').forEach((i) => { i.type = show ? "text" : "password"; });
-      b.textContent = show ? "Ocultar" : "Mostrar";
       b.setAttribute("aria-label", show ? "Ocultar a senha" : "Mostrar a senha");
       b.previousElementSibling.focus();
     });

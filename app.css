@@ -204,7 +204,7 @@ body.app {
 .form__legal { text-align: center; color: var(--text-faint); font-size: 0.82rem; line-height: 1.5; }
 
 .password-wrap { position: relative; display: block; }
-.field .password-wrap input { padding-right: 92px; }
+.field .password-wrap input { padding-right: 56px; }
 .password-toggle {
   position: absolute;
   right: 6px;
@@ -213,13 +213,19 @@ body.app {
   background: none;
   border: 0;
   border-radius: 8px;
-  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
   color: var(--accent-text);
-  font-weight: 600;
-  font-size: 0.88rem;
   cursor: pointer;
 }
 .password-toggle:hover { color: var(--accent-text-hover); }
+.password-toggle svg { width: 20px; height: 20px; }
+.password-toggle .olho-riscado, .password-wrap input[type="text"] + .password-toggle .olho { display: none; }
+.password-wrap input[type="text"] + .password-toggle .olho-riscado { display: block; }
 
 .link-btn {
   background: none;
