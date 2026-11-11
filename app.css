@@ -259,7 +259,10 @@ body.app {
   cursor: pointer;
 }
 .demo-cta { display: flex; flex-direction: column; gap: 8px; }
-.demo-cta .btn { gap: 8px; border-style: dashed; }
+.demo-cta .btn { background: var(--accent-dim); border-color: var(--accent-line); color: var(--accent-text); }
+.demo-cta .btn:hover { border-color: var(--accent); color: var(--accent-text-hover); }
+.demo-cta .btn svg { width: 18px; height: 18px; flex: none; transition: transform 0.18s ease; }
+@media (prefers-reduced-motion: no-preference) { .demo-cta .btn:hover svg { transform: translateX(2px); } }
 .demo-cta p { text-align: center; color: var(--text-faint); font-size: 0.85rem; }
 @media (max-width: 560px) {
   .demo-bar { font-size: 0.8rem; padding: 5px 12px; }
