@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { prisma } from '../lib/prisma.js';
-import { ACTIVE, issueTicket, today } from '../lib/queue.js';
+import { ACTIVE, issueTicket, lockEstablishment, today } from '../lib/queue.js';
 import { customerView } from '../lib/views.js';
 import { joinLimiter } from '../lib/limits.js';
 
@@ -49,6 +49,7 @@ router.post('/', joinLimiter, async (req, res) => {
 
   const ticket = await prisma.$transaction(async (tx) => {
     // Uma senha ativa por cliente em cada fila: se já tem, devolve a mesma.
+    await lockEstablishment(tx, establishment.id);
     const existing = await tx.ticket.findFirst({
       where: { userId: req.userId, establishmentId: establishment.id, day: today(), status: { in: ACTIVE } },
     });
