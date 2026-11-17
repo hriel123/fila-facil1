@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { prisma } from '../lib/prisma.js';
-import { ACTIVE, issueTicket, lockEstablishment, today } from '../lib/queue.js';
+import { ACTIVE, cancelWaiting, issueTicket, lockEstablishment, today } from '../lib/queue.js';
 import { customerView } from '../lib/views.js';
 import { joinLimiter } from '../lib/limits.js';
 
@@ -64,15 +64,12 @@ router.post('/', joinLimiter, async (req, res) => {
 router.delete('/:id', async (req, res) => {
   const ticket = await findOwnTicket(req, res);
   if (!ticket) return;
-  if (!ACTIVE.includes(ticket.status)) {
-    return res.status(409).json({ error: 'ticket is not active' });
+  const error = await cancelWaiting(ticket);
+  if (error) {
+    return res.status(409).json({ error });
   }
 
-  const updated = await prisma.ticket.update({
-    where: { id: ticket.id },
-    data: { status: 'CANCELED', finishedAt: new Date() },
-    include: { establishment: true },
-  });
+  const updated = await prisma.ticket.findUnique({ where: { id: ticket.id }, include: { establishment: true } });
   res.json(await customerView(updated));
 });
 

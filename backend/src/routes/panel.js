@@ -160,9 +160,12 @@ router.post('/tickets', async (req, res) => {
 router.delete('/tickets/:id', async (req, res) => {
   const id = Number(req.params.id);
   const result = Number.isInteger(id)
-    ? await prisma.ticket.updateMany({
-        where: { id, establishmentId: req.establishment.id, status: 'WAITING' },
-        data: { status: 'CANCELED', finishedAt: new Date() },
+    ? await prisma.$transaction(async (tx) => {
+        await lockEstablishment(tx, req.establishment.id);
+        return tx.ticket.updateMany({
+          where: { id, establishmentId: req.establishment.id, status: 'WAITING' },
+          data: { status: 'CANCELED', finishedAt: new Date() },
+        });
       })
     : { count: 0 };
   if (result.count === 0) {

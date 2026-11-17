@@ -625,7 +625,7 @@
       $("mtProgress").firstElementChild.style.width = `${Math.max(8, pct)}%`;
     }
 
-    $("btnDesistir").hidden = !active;
+    $("btnDesistir").hidden = t.status !== "WAITING";
     $("btnMinhas").hidden = active;
     $("btnMinhas").textContent = watchedGuest ? "Pegar outra senha" : "Ver minhas senhas";
     $("btnMinhas").href = watchedGuest ? `app.html?e=${encodeURIComponent(t.establishment.code)}` : "app.html";

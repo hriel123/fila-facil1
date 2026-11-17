@@ -56,6 +56,19 @@ export async function lockEstablishment(tx, id) {
   return tx.establishment.findUnique({ where: { id } });
 }
 
+export function cancelWaiting(ticket) {
+  return prisma.$transaction(async (tx) => {
+    await lockEstablishment(tx, ticket.establishmentId);
+    const { count } = await tx.ticket.updateMany({
+      where: { id: ticket.id, status: 'WAITING' },
+      data: { status: 'CANCELED', finishedAt: new Date() },
+    });
+    if (count) return null;
+    const current = await tx.ticket.findUnique({ where: { id: ticket.id }, select: { status: true } });
+    return current.status === 'CALLED' ? 'ticket already called' : 'ticket is not active';
+  });
+}
+
 export async function issueTicket(tx, establishmentId, data) {
   const establishment = await lockEstablishment(tx, establishmentId);
   const day = today();

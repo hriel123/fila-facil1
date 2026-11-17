@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import crypto from 'node:crypto';
 import { prisma } from '../lib/prisma.js';
-import { ACTIVE, activeTickets, byLastCall, issueTicket, serviceMinutes, today } from '../lib/queue.js';
+import { activeTickets, byLastCall, cancelWaiting, issueTicket, serviceMinutes, today } from '../lib/queue.js';
 import { customerView } from '../lib/views.js';
 import { joinLimiter } from '../lib/limits.js';
 
@@ -36,14 +36,11 @@ router.get('/tickets/:id', async (req, res) => {
 router.delete('/tickets/:id', async (req, res) => {
   const ticket = await findGuestTicket(req, res);
   if (!ticket) return;
-  if (!ACTIVE.includes(ticket.status)) {
-    return res.status(409).json({ error: 'ticket is not active' });
+  const error = await cancelWaiting(ticket);
+  if (error) {
+    return res.status(409).json({ error });
   }
-  const updated = await prisma.ticket.update({
-    where: { id: ticket.id },
-    data: { status: 'CANCELED', finishedAt: new Date() },
-    include: { establishment: true },
-  });
+  const updated = await prisma.ticket.findUnique({ where: { id: ticket.id }, include: { establishment: true } });
   res.json(await customerView(updated));
 });
 

@@ -25,6 +25,7 @@ const FF = (() => {
     "establishment not found": "Não encontramos uma fila com esse código.",
     "ticket not found": "Senha não encontrada.",
     "ticket is not active": "Esta senha não está mais na fila.",
+    "ticket already called": "Sua senha já foi chamada. Fale com o atendimento.",
     "waiting ticket not found": "Essa senha já saiu da fila.",
     "forbidden for this account type": "Esta conta não tem acesso a esta área.",
     "invalid name": "O nome precisa ter pelo menos 2 letras.",
