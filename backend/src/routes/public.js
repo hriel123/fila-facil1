@@ -52,7 +52,7 @@ router.get('/:code', async (req, res) => {
     return res.status(404).json({ error: 'establishment not found' });
   }
 
-  const day = today();
+  const day = today(establishment.timeZone);
   const [active, finishedCalls, avg] = await Promise.all([
     activeTickets(establishment.id, day),
     prisma.ticket.findMany({

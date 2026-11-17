@@ -76,7 +76,7 @@ const FFDemo = (() => {
       callCount: called === null ? 0 : 1,
     }));
     return {
-      est: { code: CODE, name: "Barbearia do Zé", prefix: "A", avgMinutes: 15, counters: 2, open: true, allowGuests: true },
+      est: { code: CODE, name: "Barbearia do Zé", prefix: "A", avgMinutes: 15, counters: 2, open: true, allowGuests: true, timeZone: "America/Fortaleza" },
       day: dayOf(now),
       tickets,
       nextId: tickets.length + 1,
@@ -191,7 +191,7 @@ const FFDemo = (() => {
     const called = [...finished, ...calling].filter((t) => t.calledAt);
     const services = finished.filter((t) => t.status === "DONE" && t.calledAt && t.finishedAt);
     return {
-      establishment: { ...data.est, allowGuests: data.est.allowGuests !== false },
+      establishment: { ...data.est, allowGuests: data.est.allowGuests !== false, timeZone: data.est.timeZone || "America/Fortaleza" },
       counter,
       current: current ? panelTicket(current) : null,
       others: byLastCall(calling.filter((t) => t !== current)).map(panelTicket),
@@ -304,7 +304,7 @@ const FFDemo = (() => {
   }
 
   function settings(data, body) {
-    const { name, avgMinutes, open, allowGuests, prefix, counters } = body ?? {};
+    const { name, avgMinutes, open, allowGuests, prefix, counters, timeZone } = body ?? {};
     const next = { ...data.est };
     if (name !== undefined) {
       if (typeof name !== "string" || name.trim().length < 2) fail(400, "invalid name");
@@ -316,6 +316,10 @@ const FFDemo = (() => {
     }
     if (open !== undefined) next.open = !!open;
     if (allowGuests !== undefined) next.allowGuests = !!allowGuests;
+    if (timeZone !== undefined) {
+      if (!["America/Noronha", "America/Sao_Paulo", "America/Fortaleza", "America/Manaus", "America/Rio_Branco"].includes(timeZone)) fail(400, "invalid timeZone");
+      next.timeZone = timeZone;
+    }
     if (prefix !== undefined) {
       if (typeof prefix !== "string" || !/^[A-Za-z]$/.test(prefix)) fail(400, "prefix must be one letter");
       next.prefix = prefix.toUpperCase();

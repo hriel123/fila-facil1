@@ -165,6 +165,7 @@ body.app {
 .field__label { font-size: 0.86rem; font-weight: 600; color: var(--text-dim); }
 .field__hint { font-size: 0.8rem; color: var(--text-faint); }
 .field input,
+.field select,
 .code-form input,
 .walkin input,
 .copy-row input {
@@ -178,6 +179,7 @@ body.app {
   transition: border-color 0.15s, box-shadow 0.15s;
 }
 .field input:focus,
+.field select:focus,
 .code-form input:focus,
 .walkin input:focus {
   outline: none;

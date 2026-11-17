@@ -42,6 +42,7 @@ model Establishment {
   counters     Int      @default(1)
   open         Boolean  @default(true)
   allowGuests  Boolean  @default(true)
+  timeZone     String   @default("America/Fortaleza")
   nextNumber   Int      @default(1)
   numberingDay String?
   createdAt    DateTime @default(now())

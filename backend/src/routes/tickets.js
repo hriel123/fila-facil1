@@ -51,7 +51,7 @@ router.post('/', joinLimiter, async (req, res) => {
     // Uma senha ativa por cliente em cada fila: se já tem, devolve a mesma.
     await lockEstablishment(tx, establishment.id);
     const existing = await tx.ticket.findFirst({
-      where: { userId: req.userId, establishmentId: establishment.id, day: today(), status: { in: ACTIVE } },
+      where: { userId: req.userId, establishmentId: establishment.id, day: today(establishment.timeZone), status: { in: ACTIVE } },
     });
     if (existing) return existing;
     return issueTicket(tx, establishment.id, { userId: req.userId });

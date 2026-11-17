@@ -426,6 +426,17 @@
             <small class="field__hint">Com mais de um, cada aparelho do atendimento escolhe o seu guichê no painel (mesma conta), e todos chamam da mesma fila.</small>
           </label>
         </div>
+        <label class="field">
+          <span class="field__label">Fuso horário</span>
+          <select name="timeZone">
+            <option value="America/Noronha">Fernando de Noronha (UTC−2)</option>
+            <option value="America/Sao_Paulo">Brasília, Sul e Sudeste (UTC−3)</option>
+            <option value="America/Fortaleza">Nordeste, Pará, Amapá e Tocantins (UTC−3)</option>
+            <option value="America/Manaus">Amazonas, Mato Grosso, Mato Grosso do Sul, Rondônia e Roraima (UTC−4)</option>
+            <option value="America/Rio_Branco">Acre (UTC−5)</option>
+          </select>
+          <small class="field__hint">Define a hora em que a numeração recomeça e os horários do relatório.</small>
+        </label>
         <p class="form__error" role="alert" hidden></p>
         <button class="btn btn--primary" type="submit">Salvar</button>
       </form>

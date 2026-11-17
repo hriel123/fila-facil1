@@ -11,7 +11,7 @@
   const params = new URLSearchParams(location.search);
   const filaCode = (params.get("e") || "").trim().toUpperCase();
   const resetToken = params.get("redefinir") || "";
-  const TIME_ZONE = "America/Fortaleza";
+  let TIME_ZONE = "America/Fortaleza";
 
   const STATUS = {
     WAITING: "Aguardando",
@@ -897,6 +897,7 @@
   function renderPanel(p) {
     panel = p;
     const e = p.establishment;
+    if (e.timeZone) TIME_ZONE = e.timeZone;
     if (p.counter !== myCounter) setCounter(p.counter);
     renderCounters(p);
     $("pName").textContent = e.name;
@@ -1170,6 +1171,7 @@
     f.elements.prefix.value = e.prefix;
     f.elements.avgMinutes.value = e.avgMinutes;
     f.elements.counters.value = e.counters;
+    if (f.elements.timeZone) f.elements.timeZone.value = e.timeZone || "America/Fortaleza";
   }
 
   document.querySelectorAll(".number-stepper").forEach((wrap) => {
@@ -1193,6 +1195,7 @@
       prefix: f.elements.prefix.value.trim(),
       avgMinutes: Number(f.elements.avgMinutes.value),
       counters: Number(f.elements.counters.value),
+      ...(f.elements.timeZone ? { timeZone: f.elements.timeZone.value } : {}),
       counter: myCounter,
     };
     setError(error, null);

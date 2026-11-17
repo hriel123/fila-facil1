@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { prisma } from '../lib/prisma.js';
-import { activeTickets, byLastCall, hourOf, issueTicket, lockEstablishment, minutesBetween, serviceMinutes, today } from '../lib/queue.js';
+import { TIME_ZONES, activeTickets, byLastCall, hourOf, issueTicket, lockEstablishment, minutesBetween, serviceMinutes, today } from '../lib/queue.js';
 
 const router = Router();
 
@@ -15,8 +15,8 @@ router.use(async (req, res, next) => {
   next();
 });
 
-function callDays(now = new Date()) {
-  return { in: [today(new Date(now.getTime() - 24 * 60 * 60 * 1000)), today(now)] };
+function callDays(timeZone, now = new Date()) {
+  return { in: [today(timeZone, new Date(now.getTime() - 24 * 60 * 60 * 1000)), today(timeZone, now)] };
 }
 
 function round1(value) {
@@ -50,11 +50,11 @@ function panelTicket(ticket) {
 }
 
 async function panelState(establishment, counter = 1) {
-  const day = today();
+  const day = today(establishment.timeZone);
   const [active, calling, finished, avg] = await Promise.all([
     activeTickets(establishment.id, day),
     prisma.ticket.findMany({
-      where: { establishmentId: establishment.id, day: callDays(), status: 'CALLED' },
+      where: { establishmentId: establishment.id, day: callDays(establishment.timeZone), status: 'CALLED' },
       orderBy: [{ day: 'asc' }, { number: 'asc' }],
       include: { user: { select: { name: true } } },
     }),
@@ -79,6 +79,7 @@ async function panelState(establishment, counter = 1) {
       counters: establishment.counters,
       open: establishment.open,
       allowGuests: establishment.allowGuests,
+      timeZone: establishment.timeZone,
     },
     counter,
     current: current ? panelTicket(current) : null,
@@ -101,15 +102,15 @@ async function act(req, res, action) {
   const counter = counterOf(req);
   await prisma.$transaction(async (tx) => {
     await lockEstablishment(tx, req.establishment.id);
-    await action(tx, today(), new Date(), counter);
+    await action(tx, today(req.establishment.timeZone), new Date(), counter);
   });
   const establishment = await prisma.establishment.findUnique({ where: { id: req.establishment.id } });
   res.json(await panelState(establishment, counter));
 }
 
-function closeCurrent(tx, establishmentId, now, counter, status) {
+function closeCurrent(tx, establishment, now, counter, status) {
   return tx.ticket.updateMany({
-    where: { establishmentId, day: callDays(now), status: 'CALLED', counter },
+    where: { establishmentId: establishment.id, day: callDays(establishment.timeZone, now), status: 'CALLED', counter },
     data: { status, finishedAt: now },
   });
 }
@@ -123,7 +124,7 @@ router.get('/', async (req, res) => {
 router.post('/next', (req, res) =>
   act(req, res, async (tx, day, now, counter) => {
     const id = req.establishment.id;
-    await closeCurrent(tx, id, now, counter, 'DONE');
+    await closeCurrent(tx, req.establishment, now, counter, 'DONE');
     const next = await tx.ticket.findFirst({ where: { establishmentId: id, day, status: 'WAITING' }, orderBy: { number: 'asc' } });
     if (next) {
       await tx.ticket.update({ where: { id: next.id }, data: { status: 'CALLED', counter, calledAt: now, lastCallAt: now, callCount: 1 } });
@@ -133,15 +134,15 @@ router.post('/next', (req, res) =>
 router.post('/recall', (req, res) =>
   act(req, res, (tx, day, now, counter) =>
     tx.ticket.updateMany({
-      where: { establishmentId: req.establishment.id, day: callDays(now), status: 'CALLED', counter },
+      where: { establishmentId: req.establishment.id, day: callDays(req.establishment.timeZone, now), status: 'CALLED', counter },
       data: { callCount: { increment: 1 }, lastCallAt: now },
     })));
 
 router.post('/finish', (req, res) =>
-  act(req, res, (tx, day, now, counter) => closeCurrent(tx, req.establishment.id, now, counter, 'DONE')));
+  act(req, res, (tx, day, now, counter) => closeCurrent(tx, req.establishment, now, counter, 'DONE')));
 
 router.post('/no-show', (req, res) =>
-  act(req, res, (tx, day, now, counter) => closeCurrent(tx, req.establishment.id, now, counter, 'NO_SHOW')));
+  act(req, res, (tx, day, now, counter) => closeCurrent(tx, req.establishment, now, counter, 'NO_SHOW')));
 
 router.post('/cancel-guests', (req, res) =>
   act(req, res, (tx, day, now) =>
@@ -175,7 +176,7 @@ router.delete('/tickets/:id', async (req, res) => {
 });
 
 router.patch('/settings', async (req, res) => {
-  const { name, avgMinutes, open, allowGuests, prefix, counters } = req.body ?? {};
+  const { name, avgMinutes, open, allowGuests, prefix, counters, timeZone } = req.body ?? {};
   const data = {};
 
   if (name !== undefined) {
@@ -194,6 +195,10 @@ router.patch('/settings', async (req, res) => {
     if (typeof allowGuests !== 'boolean') return res.status(400).json({ error: 'allowGuests must be boolean' });
     data.allowGuests = allowGuests;
   }
+  if (timeZone !== undefined) {
+    if (!TIME_ZONES.includes(timeZone)) return res.status(400).json({ error: 'invalid timeZone' });
+    data.timeZone = timeZone;
+  }
   if (prefix !== undefined) {
     if (typeof prefix !== 'string' || !/^[A-Za-z]$/.test(prefix)) return res.status(400).json({ error: 'prefix must be one letter' });
     data.prefix = prefix.toUpperCase();
@@ -203,7 +208,7 @@ router.patch('/settings', async (req, res) => {
     if (!Number.isInteger(counters) || counters < 1 || counters > 20) return res.status(400).json({ error: 'counters must be 1 to 20' });
     // Não deixa sumir um guichê que ainda está atendendo alguém.
     const busy = await prisma.ticket.findFirst({
-      where: { establishmentId: req.establishment.id, day: callDays(), status: 'CALLED', counter: { gt: counters } },
+      where: { establishmentId: req.establishment.id, day: callDays(req.establishment.timeZone), status: 'CALLED', counter: { gt: counters } },
     });
     if (busy) return res.status(409).json({ error: 'counter busy', counter: busy.counter });
     data.counters = counters;
@@ -214,8 +219,9 @@ router.patch('/settings', async (req, res) => {
 });
 
 router.get('/report', async (req, res) => {
-  const day = DAY_REGEX.test(String(req.query.day ?? '')) ? String(req.query.day) : today();
-  const isToday = day === today();
+  const timeZone = req.establishment.timeZone;
+  const day = DAY_REGEX.test(String(req.query.day ?? '')) ? String(req.query.day) : today(timeZone);
+  const isToday = day === today(timeZone);
   const tickets = await prisma.ticket.findMany({
     where: { establishmentId: req.establishment.id, day },
     orderBy: { number: 'asc' },
@@ -233,7 +239,7 @@ router.get('/report', async (req, res) => {
 
   const counts = new Map();
   for (const t of tickets) {
-    const hour = hourOf(t.createdAt);
+    const hour = hourOf(timeZone, t.createdAt);
     counts.set(hour, (counts.get(hour) ?? 0) + 1);
   }
   const hours = [...counts.keys()];

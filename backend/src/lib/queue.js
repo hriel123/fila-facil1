@@ -1,17 +1,27 @@
 import { prisma } from './prisma.js';
 
-const TIME_ZONE = 'America/Fortaleza';
-const dayFormat = new Intl.DateTimeFormat('en-CA', { timeZone: TIME_ZONE, year: 'numeric', month: '2-digit', day: '2-digit' });
-const hourFormat = new Intl.DateTimeFormat('en-GB', { timeZone: TIME_ZONE, hour: '2-digit', hourCycle: 'h23' });
+export const TIME_ZONES = ['America/Noronha', 'America/Sao_Paulo', 'America/Fortaleza', 'America/Manaus', 'America/Rio_Branco'];
+
+const formats = new Map();
+
+function formatIn(timeZone, kind) {
+  const key = `${kind}:${timeZone}`;
+  if (!formats.has(key)) {
+    formats.set(key, kind === 'day'
+      ? new Intl.DateTimeFormat('en-CA', { timeZone, year: 'numeric', month: '2-digit', day: '2-digit' })
+      : new Intl.DateTimeFormat('en-GB', { timeZone, hour: '2-digit', hourCycle: 'h23' }));
+  }
+  return formats.get(key);
+}
 
 export const ACTIVE = ['WAITING', 'CALLED'];
 
-export function today(date = new Date()) {
-  return dayFormat.format(date);
+export function today(timeZone, date = new Date()) {
+  return formatIn(timeZone, 'day').format(date);
 }
 
-export function hourOf(date) {
-  return Number(hourFormat.format(date));
+export function hourOf(timeZone, date) {
+  return Number(formatIn(timeZone, 'hour').format(date));
 }
 
 export function formatCode(prefix, number) {
@@ -29,7 +39,7 @@ function average(values) {
 
 // Tempo médio de atendimento do dia (da chamada ao fim). Com menos de 3
 // atendimentos no dia, usa o tempo médio configurado pelo estabelecimento.
-export async function serviceMinutes(establishment, day = today()) {
+export async function serviceMinutes(establishment, day = today(establishment.timeZone)) {
   const done = await prisma.ticket.findMany({
     where: { establishmentId: establishment.id, day, status: 'DONE', calledAt: { not: null }, finishedAt: { not: null } },
     select: { calledAt: true, finishedAt: true },
@@ -40,7 +50,7 @@ export async function serviceMinutes(establishment, day = today()) {
 }
 
 // Senhas ativas do dia (aguardando ou em chamada), em ordem de chegada.
-export function activeTickets(establishmentId, day = today()) {
+export function activeTickets(establishmentId, day) {
   return prisma.ticket.findMany({
     where: { establishmentId, day, status: { in: ['WAITING', 'CALLED'] } },
     orderBy: { number: 'asc' },
@@ -71,7 +81,7 @@ export function cancelWaiting(ticket) {
 
 export async function issueTicket(tx, establishmentId, data) {
   const establishment = await lockEstablishment(tx, establishmentId);
-  const day = today();
+  const day = today(establishment.timeZone);
   const number = establishment.numberingDay === day ? establishment.nextNumber : 1;
   await tx.establishment.update({ where: { id: establishmentId }, data: { nextNumber: number + 1, numberingDay: day } });
   return tx.ticket.create({

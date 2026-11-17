@@ -3,7 +3,7 @@ import { ACTIVE, activeTickets, byLastCall, estimateMinutes, serviceMinutes, tod
 // Senha do cliente (com ou sem conta) com a posição na fila, o guichê e a
 // estimativa de espera.
 export async function customerView(ticket) {
-  const day = today();
+  const day = today(ticket.establishment.timeZone);
   const base = {
     id: ticket.id,
     code: ticket.code,
