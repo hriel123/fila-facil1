@@ -309,7 +309,7 @@
     const noGuests = !!fila && fila.open && fila.allowGuests === false;
     $("formConvidado").hidden = !fila || noGuests;
     $("authDivider").hidden = !fila || noGuests;
-    $("authNoGuests").hidden = !noGuests;
+    if ($("authNoGuests")) $("authNoGuests").hidden = !noGuests;
     if (fila) {
       const f = $("formConvidado");
       f.querySelector(".guest-card__row").hidden = !fila.open;
@@ -903,9 +903,11 @@
     $("pOpen").checked = e.open;
     $("pOpenLabel").textContent = e.open ? "Recebendo senhas" : "Fila fechada";
     $("pClosedNotice").hidden = e.open;
-    $("pNoGuestsNotice").hidden = !e.open || e.allowGuests !== false;
-    $("aGuests").checked = e.allowGuests !== false;
-    $("aGuestsLabel").textContent = e.allowGuests !== false ? "Aceitando senha sem conta" : "Só com conta";
+    if ($("aGuests")) {
+      $("pNoGuestsNotice").hidden = !e.open || e.allowGuests !== false;
+      $("aGuests").checked = e.allowGuests !== false;
+      $("aGuestsLabel").textContent = e.allowGuests !== false ? "Aceitando senha sem conta" : "Só com conta";
+    }
     $("btnTv").href = FF.link("tv.html", e.code);
 
     $("sWaiting").textContent = String(p.stats.waiting);
@@ -945,8 +947,10 @@
       list.append(li);
     });
     const guests = p.waiting.filter((t) => t.guest).length;
-    $("btnCancelGuests").hidden = guests === 0;
-    $("btnCancelGuests").textContent = guests === 1 ? "Remover a senha sem conta" : `Remover as ${guests} senhas sem conta`;
+    if ($("btnCancelGuests")) {
+      $("btnCancelGuests").hidden = guests === 0;
+      $("btnCancelGuests").textContent = guests === 1 ? "Remover a senha sem conta" : `Remover as ${guests} senhas sem conta`;
+    }
     if (focused) {
       const buttons = list.querySelectorAll("button");
       (list.querySelector(`[data-id="${focused.dataset.id}"]`) || buttons[Math.min(focusIndex, buttons.length - 1)] || $("btnWalkIn")).focus();
@@ -1052,7 +1056,7 @@
     }
   });
 
-  $("aGuests").addEventListener("change", async (e) => {
+  $("aGuests")?.addEventListener("change", async (e) => {
     const allowGuests = e.target.checked;
     try {
       renderPanel(await FF.request("/panel/settings", { method: "PATCH", body: { allowGuests, counter: myCounter } }));
@@ -1063,7 +1067,7 @@
     }
   });
 
-  $("btnCancelGuests").addEventListener("click", async () => {
+  $("btnCancelGuests")?.addEventListener("click", async () => {
     const before = panel ? panel.waiting.filter((t) => t.guest).length : 0;
     if (!before || !confirm(`Tirar da fila ${before === 1 ? "a senha pega" : `as ${before} senhas pegas`} sem conta? Clientes com conta e senhas avulsas continuam.`)) return;
     try {
