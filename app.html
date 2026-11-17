@@ -78,6 +78,7 @@
         <p class="fila-card__name" data-fila="name"></p>
         <p class="fila-card__info"><span data-fila="waiting"></span> · <span data-fila="estimate"></span></p>
       </div>
+      <p class="notice-line notice-line--info" id="authNoGuests" hidden>Esta fila só aceita senha de quem tem conta. Entre ou crie a sua para pegar a senha.</p>
 
       <form class="guest-card" id="formConvidado" novalidate hidden>
         <h2 class="guest-card__title">Pegar senha sem conta</h2>
@@ -284,6 +285,7 @@
     </div>
 
     <p class="notice-line notice-line--warn" id="pClosedNotice" hidden>A fila está fechada: os clientes não conseguem pegar senha pelo celular.</p>
+    <p class="notice-line notice-line--warn" id="pNoGuestsNotice" hidden>Senha sem conta desligada: só clientes com conta conseguem pegar senha. Para religar, vá em Ajustes.</p>
 
     <div class="tabs tabs--panel" role="tablist" aria-label="Seções do painel">
       <button class="tab is-active" role="tab" type="button" id="ptabAtendimento" data-ptab="atendimento" aria-selected="true" aria-controls="tabAtendimento">Atendimento</button>
@@ -334,6 +336,7 @@
             <button class="btn btn--text" type="button" id="btnWalkInCancel">Cancelar</button>
           </form>
           <ol class="q-list" id="qList"></ol>
+          <button class="btn btn--ghost btn--sm" id="btnCancelGuests" type="button" hidden></button>
           <p class="q-empty" id="qEmpty">Ninguém na fila. Mostre o QR code para os clientes pegarem senha pelo celular, ou gere uma senha avulsa.</p>
           <div class="recent" id="recentBox" hidden>
             <h3>Últimos atendimentos</h3>
@@ -426,6 +429,15 @@
         <p class="form__error" role="alert" hidden></p>
         <button class="btn btn--primary" type="submit">Salvar</button>
       </form>
+      <div class="card">
+        <h2 class="card__title">Senha sem conta</h2>
+        <p class="card__text">Quem lê o QR code pode pegar senha só com o nome. Se alguém encher a fila de senhas falsas, desligue: só clientes com conta vão conseguir entrar. Para tirar as que já estão na fila, use "Remover senhas sem conta" no Atendimento.</p>
+        <label class="switch">
+          <input type="checkbox" id="aGuests">
+          <span class="switch__track" aria-hidden="true"></span>
+          <span class="switch__label" id="aGuestsLabel">Aceitando senha sem conta</span>
+        </label>
+      </div>
       <div class="card">
         <h2 class="card__title">Link da fila</h2>
         <p class="card__text">Código da fila: <strong class="mono" id="aCode"></strong>. Os clientes também podem digitar esse código no app.</p>

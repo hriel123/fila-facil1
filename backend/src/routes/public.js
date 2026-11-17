@@ -73,6 +73,7 @@ router.get('/:code', async (req, res) => {
     code: establishment.code,
     name: establishment.name,
     open: establishment.open,
+    allowGuests: establishment.allowGuests,
     counters: establishment.counters,
     waiting: active.filter((t) => t.status === 'WAITING').length,
     avgMinutes: avg,
@@ -93,6 +94,9 @@ router.post('/:code/tickets', joinLimiter, async (req, res) => {
   }
   if (!establishment.open) {
     return res.status(409).json({ error: 'queue closed' });
+  }
+  if (!establishment.allowGuests) {
+    return res.status(403).json({ error: 'guest tickets disabled' });
   }
 
   const key = crypto.randomBytes(24).toString('base64url');

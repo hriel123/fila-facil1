@@ -306,8 +306,10 @@
     authFila = fila;
     $("authFila").hidden = !fila;
     if (fila) fillFila(fila);
-    $("formConvidado").hidden = !fila;
-    $("authDivider").hidden = !fila;
+    const noGuests = !!fila && fila.open && fila.allowGuests === false;
+    $("formConvidado").hidden = !fila || noGuests;
+    $("authDivider").hidden = !fila || noGuests;
+    $("authNoGuests").hidden = !noGuests;
     if (fila) {
       const f = $("formConvidado");
       f.querySelector(".guest-card__row").hidden = !fila.open;
@@ -901,6 +903,9 @@
     $("pOpen").checked = e.open;
     $("pOpenLabel").textContent = e.open ? "Recebendo senhas" : "Fila fechada";
     $("pClosedNotice").hidden = e.open;
+    $("pNoGuestsNotice").hidden = !e.open || e.allowGuests !== false;
+    $("aGuests").checked = e.allowGuests !== false;
+    $("aGuestsLabel").textContent = e.allowGuests !== false ? "Aceitando senha sem conta" : "Só com conta";
     $("btnTv").href = FF.link("tv.html", e.code);
 
     $("sWaiting").textContent = String(p.stats.waiting);
@@ -930,7 +935,7 @@
       const li = el("li", "q-item");
       li.append(el("span", "q-item__pos", String(i + 1)), el("span", "q-item__code", t.code));
       const info = el("span", "q-item__info");
-      info.append(el("strong", null, ticketName(t)), el("span", null, `chegou ${ago(t.createdAt)}`));
+      info.append(el("strong", null, ticketName(t)), el("span", null, `chegou ${ago(t.createdAt)}${t.guest ? " · sem conta" : ""}`));
       const remove = el("button", "q-item__remove", "×");
       remove.type = "button";
       remove.setAttribute("aria-label", `Tirar a senha ${t.code} da fila`);
@@ -939,6 +944,9 @@
       li.append(info, remove);
       list.append(li);
     });
+    const guests = p.waiting.filter((t) => t.guest).length;
+    $("btnCancelGuests").hidden = guests === 0;
+    $("btnCancelGuests").textContent = guests === 1 ? "Remover a senha sem conta" : `Remover as ${guests} senhas sem conta`;
     if (focused) {
       const buttons = list.querySelectorAll("button");
       (list.querySelector(`[data-id="${focused.dataset.id}"]`) || buttons[Math.min(focusIndex, buttons.length - 1)] || $("btnWalkIn")).focus();
@@ -1040,6 +1048,30 @@
       toast(open ? "Fila aberta: os clientes já podem pegar senha." : "Fila fechada para novas senhas.");
     } catch (err) {
       e.target.checked = !open;
+      toast(err.friendly);
+    }
+  });
+
+  $("aGuests").addEventListener("change", async (e) => {
+    const allowGuests = e.target.checked;
+    try {
+      renderPanel(await FF.request("/panel/settings", { method: "PATCH", body: { allowGuests, counter: myCounter } }));
+      toast(allowGuests ? "Senha sem conta religada." : "Senha sem conta desligada: só clientes com conta conseguem entrar.");
+    } catch (err) {
+      e.target.checked = !allowGuests;
+      toast(err.friendly);
+    }
+  });
+
+  $("btnCancelGuests").addEventListener("click", async () => {
+    const before = panel ? panel.waiting.filter((t) => t.guest).length : 0;
+    if (!before || !confirm(`Tirar da fila ${before === 1 ? "a senha pega" : `as ${before} senhas pegas`} sem conta? Clientes com conta e senhas avulsas continuam.`)) return;
+    try {
+      const p = await FF.request("/panel/cancel-guests", { method: "POST", body: { counter: myCounter } });
+      renderPanel(p);
+      const removed = before - p.waiting.filter((t) => t.guest).length;
+      toast(removed === 1 ? "1 senha sem conta removida." : `${removed} senhas sem conta removidas.`);
+    } catch (err) {
       toast(err.friendly);
     }
   });

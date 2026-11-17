@@ -76,7 +76,7 @@ const FFDemo = (() => {
       callCount: called === null ? 0 : 1,
     }));
     return {
-      est: { code: CODE, name: "Barbearia do Zé", prefix: "A", avgMinutes: 15, counters: 2, open: true },
+      est: { code: CODE, name: "Barbearia do Zé", prefix: "A", avgMinutes: 15, counters: 2, open: true, allowGuests: true },
       day: dayOf(now),
       tickets,
       nextId: tickets.length + 1,
@@ -144,15 +144,15 @@ const FFDemo = (() => {
   function arrivals(data, now) {
     const waiting = data.tickets.filter((t) => t.status === "WAITING").length;
     if (!data.est.open || waiting >= 5 || now - data.lastArrival < 50000) return;
-    issue(data, NAMES[data.nameIndex % NAMES.length], false, now);
+    issue(data, NAMES[data.nameIndex % NAMES.length], false, now, data.est.allowGuests !== false);
     data.nameIndex += 1;
     data.lastArrival = now;
   }
 
-  function issue(data, name, walkIn, now) {
+  function issue(data, name, walkIn, now, guest = false) {
     const number = data.nextNumber++;
     data.tickets.push({
-      id: data.nextId++, number, code: code(data.est.prefix, number), name, walkIn, status: "WAITING", counter: null,
+      id: data.nextId++, number, code: code(data.est.prefix, number), name, walkIn, guest, status: "WAITING", counter: null,
       createdAt: now, calledAt: null, lastCallAt: null, finishedAt: null, callCount: 0,
     });
   }
@@ -171,7 +171,7 @@ const FFDemo = (() => {
 
   function panelTicket(t) {
     return {
-      id: t.id, code: t.code, name: t.name, walkIn: t.walkIn, counter: t.counter, status: t.status,
+      id: t.id, code: t.code, name: t.name, walkIn: t.walkIn, guest: !!t.guest, counter: t.counter, status: t.status,
       createdAt: iso(t.createdAt), calledAt: iso(t.calledAt), finishedAt: iso(t.finishedAt), callCount: t.callCount,
     };
   }
@@ -191,7 +191,7 @@ const FFDemo = (() => {
     const called = [...finished, ...calling].filter((t) => t.calledAt);
     const services = finished.filter((t) => t.status === "DONE" && t.calledAt && t.finishedAt);
     return {
-      establishment: { ...data.est },
+      establishment: { ...data.est, allowGuests: data.est.allowGuests !== false },
       counter,
       current: current ? panelTicket(current) : null,
       others: byLastCall(calling.filter((t) => t !== current)).map(panelTicket),
@@ -221,6 +221,7 @@ const FFDemo = (() => {
       code: data.est.code,
       name: data.est.name,
       open: data.est.open,
+      allowGuests: data.est.allowGuests !== false,
       counters: data.est.counters,
       waiting: activeList.filter((t) => t.status === "WAITING").length,
       avgMinutes: serviceAvg(data),
@@ -303,7 +304,7 @@ const FFDemo = (() => {
   }
 
   function settings(data, body) {
-    const { name, avgMinutes, open, prefix, counters } = body ?? {};
+    const { name, avgMinutes, open, allowGuests, prefix, counters } = body ?? {};
     const next = { ...data.est };
     if (name !== undefined) {
       if (typeof name !== "string" || name.trim().length < 2) fail(400, "invalid name");
@@ -314,6 +315,7 @@ const FFDemo = (() => {
       next.avgMinutes = avgMinutes;
     }
     if (open !== undefined) next.open = !!open;
+    if (allowGuests !== undefined) next.allowGuests = !!allowGuests;
     if (prefix !== undefined) {
       if (typeof prefix !== "string" || !/^[A-Za-z]$/.test(prefix)) fail(400, "prefix must be one letter");
       next.prefix = prefix.toUpperCase();
@@ -369,6 +371,13 @@ const FFDemo = (() => {
         if (!t) fail(404, "waiting ticket not found");
         t.status = "CANCELED";
         t.finishedAt = now;
+      } else if (route === "/panel/cancel-guests") {
+        data.tickets.forEach((t) => {
+          if (t.status === "WAITING" && t.guest) {
+            t.status = "CANCELED";
+            t.finishedAt = now;
+          }
+        });
       } else if (route === "/panel/settings") {
         settings(data, body);
         counter = Math.min(counter, data.est.counters);

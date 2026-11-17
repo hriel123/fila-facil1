@@ -21,6 +21,7 @@ const FF = (() => {
     "too many tickets, please try again later": "Muitas senhas em pouco tempo. Espere alguns minutos.",
     "too many requests": "Muitas atualizações seguidas. Espere um instante.",
     "queue closed": "Esta fila não está recebendo senhas agora.",
+    "guest tickets disabled": "Esta fila só aceita senha de quem tem conta. Entre ou crie uma conta para pegar a sua.",
     "establishment not found": "Não encontramos uma fila com esse código.",
     "ticket not found": "Senha não encontrada.",
     "ticket is not active": "Esta senha não está mais na fila.",

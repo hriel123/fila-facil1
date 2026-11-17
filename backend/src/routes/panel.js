@@ -39,6 +39,7 @@ function panelTicket(ticket) {
     code: ticket.code,
     name: ticket.user?.name ?? ticket.guestName ?? null,
     walkIn: ticket.userId === null && !ticket.guestKeyHash,
+    guest: ticket.userId === null && !!ticket.guestKeyHash,
     counter: ticket.counter,
     status: ticket.status,
     createdAt: ticket.createdAt,
@@ -77,6 +78,7 @@ async function panelState(establishment, counter = 1) {
       avgMinutes: establishment.avgMinutes,
       counters: establishment.counters,
       open: establishment.open,
+      allowGuests: establishment.allowGuests,
     },
     counter,
     current: current ? panelTicket(current) : null,
@@ -141,6 +143,13 @@ router.post('/finish', (req, res) =>
 router.post('/no-show', (req, res) =>
   act(req, res, (tx, day, now, counter) => closeCurrent(tx, req.establishment.id, now, counter, 'NO_SHOW')));
 
+router.post('/cancel-guests', (req, res) =>
+  act(req, res, (tx, day, now) =>
+    tx.ticket.updateMany({
+      where: { establishmentId: req.establishment.id, day, status: 'WAITING', userId: null, guestKeyHash: { not: null } },
+      data: { status: 'CANCELED', finishedAt: now },
+    })));
+
 // Senha avulsa, para quem chega sem celular ou sem conta.
 router.post('/tickets', async (req, res) => {
   const name = typeof req.body?.name === 'string' ? req.body.name.trim().slice(0, 60) : '';
@@ -163,7 +172,7 @@ router.delete('/tickets/:id', async (req, res) => {
 });
 
 router.patch('/settings', async (req, res) => {
-  const { name, avgMinutes, open, prefix, counters } = req.body ?? {};
+  const { name, avgMinutes, open, allowGuests, prefix, counters } = req.body ?? {};
   const data = {};
 
   if (name !== undefined) {
@@ -177,6 +186,10 @@ router.patch('/settings', async (req, res) => {
   if (open !== undefined) {
     if (typeof open !== 'boolean') return res.status(400).json({ error: 'open must be boolean' });
     data.open = open;
+  }
+  if (allowGuests !== undefined) {
+    if (typeof allowGuests !== 'boolean') return res.status(400).json({ error: 'allowGuests must be boolean' });
+    data.allowGuests = allowGuests;
   }
   if (prefix !== undefined) {
     if (typeof prefix !== 'string' || !/^[A-Za-z]$/.test(prefix)) return res.status(400).json({ error: 'prefix must be one letter' });
