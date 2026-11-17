@@ -210,6 +210,7 @@
 
   function renderHeader() {
     $("demoBar").hidden = !(user && FFDemo.active());
+    document.querySelectorAll("[data-logout-all-card]").forEach((card) => { card.hidden = FFDemo.active(); });
     $("appUser").hidden = !user;
     if (user) $("userName").textContent = firstName(user.name);
   }
@@ -219,6 +220,21 @@
     FF.setToken(null);
     location.href = "app.html";
   });
+
+  document.querySelectorAll("[data-logout-all]").forEach((btn) => btn.addEventListener("click", async () => {
+    btn.disabled = true;
+    try {
+      await FF.request("/auth/logout-all", { method: "POST" });
+    } catch (err) {
+      if (err.status !== 401) {
+        btn.disabled = false;
+        toast(err.friendly);
+        return;
+      }
+    }
+    FF.setToken(null);
+    location.href = "app.html";
+  }));
 
   async function startDemo() {
     FFDemo.start();

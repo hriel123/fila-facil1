@@ -207,4 +207,9 @@ router.get('/me', authMiddleware, async (req, res) => {
   res.json({ user: publicUser(user) });
 });
 
+router.post('/logout-all', authMiddleware, async (req, res) => {
+  await prisma.user.update({ where: { id: req.userId }, data: { tokenVersion: { increment: 1 } } });
+  res.status(204).end();
+});
+
 export default router;
