@@ -14,6 +14,7 @@ const FF = (() => {
     "email already registered": "Este e-mail já tem conta. Use a aba \"Entrar\".",
     "invalid email format": "Digite um e-mail válido.",
     "password must be at least 6 characters long": "A senha precisa ter pelo menos 6 caracteres.",
+    "password must be at most 72 bytes long": "A senha é longa demais: use até 72 caracteres (letras com acento contam como dois).",
     "businessName is required": "Digite o nome do estabelecimento.",
     "name, email and password are required": "Preencha nome, e-mail e senha.",
     "too many attempts, please try again later": "Muitas tentativas. Espere alguns minutos e tente de novo.",

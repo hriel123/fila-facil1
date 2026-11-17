@@ -90,6 +90,10 @@ router.post('/register', authLimiter, async (req, res) => {
     return res.status(400).json({ error: 'password must be at least 6 characters long' });
   }
 
+  if (Buffer.byteLength(password) > 72) {
+    return res.status(400).json({ error: 'password must be at most 72 bytes long' });
+  }
+
   const normalizedEmail = email.trim().toLowerCase();
   const existing = await prisma.user.findUnique({ where: { email: normalizedEmail } });
   if (existing) {
@@ -179,6 +183,10 @@ router.post('/reset', authLimiter, async (req, res) => {
   }
   if (password.length < 6) {
     return res.status(400).json({ error: 'password must be at least 6 characters long' });
+  }
+
+  if (Buffer.byteLength(password) > 72) {
+    return res.status(400).json({ error: 'password must be at most 72 bytes long' });
   }
 
   const reset = await prisma.passwordReset.findUnique({
