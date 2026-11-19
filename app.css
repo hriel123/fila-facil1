@@ -810,6 +810,7 @@ kbd {
 /* ---------- Copiar link ---------- */
 .copy-row { display: flex; gap: 8px; margin-bottom: 12px; }
 .copy-row input { padding: 9px 12px; font-size: 0.85rem; color: var(--text-dim); }
+.delete-account__row { display: flex; flex-wrap: wrap; gap: 10px; }
 
 /* ---------- Modal ---------- */
 .modal {

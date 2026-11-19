@@ -137,6 +137,10 @@
      Início
   --------------------------------------------------------- */
   async function boot() {
+    if (params.get("conta") === "excluida") {
+      history.replaceState(null, "", "app.html");
+      toast("Sua conta foi excluída.");
+    }
     show("vLoading");
     if (!FF.base) {
       showOffline("O sistema ainda não foi ligado ao servidor.", false);
@@ -210,7 +214,7 @@
 
   function renderHeader() {
     $("demoBar").hidden = !(user && FFDemo.active());
-    document.querySelectorAll("[data-logout-all-card]").forEach((card) => { card.hidden = FFDemo.active(); });
+    document.querySelectorAll("[data-logout-all-card], [data-delete-account-card]").forEach((card) => { card.hidden = FFDemo.active(); });
     $("appUser").hidden = !user;
     if (user) $("userName").textContent = firstName(user.name);
   }
@@ -235,6 +239,36 @@
     FF.setToken(null);
     location.href = "app.html";
   }));
+
+  document.querySelectorAll("[data-delete-account-card]").forEach((card) => {
+    const open = card.querySelector("[data-delete-account]");
+    const form = card.querySelector("[data-delete-account-form]");
+    const toggle = (show) => {
+      open.hidden = show;
+      form.hidden = !show;
+      form.reset();
+      if (show) form.elements.password.focus();
+    };
+    open.addEventListener("click", () => toggle(true));
+    card.querySelector("[data-delete-account-cancel]").addEventListener("click", () => toggle(false));
+    form.addEventListener("submit", async (ev) => {
+      ev.preventDefault();
+      const password = form.elements.password.value;
+      if (!password) { toast("Digite sua senha para confirmar."); form.elements.password.focus(); return; }
+      const btn = form.querySelector('[type="submit"]');
+      btn.disabled = true;
+      try {
+        await FF.request("/auth/me", { method: "DELETE", body: { password } });
+      } catch (err) {
+        btn.disabled = false;
+        toast(err.friendly);
+        form.elements.password.select();
+        return;
+      }
+      FF.setToken(null);
+      location.href = "app.html?conta=excluida";
+    });
+  });
 
   async function startDemo() {
     FFDemo.start();

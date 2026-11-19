@@ -258,6 +258,21 @@
       <p class="card__text">Encerra o acesso a esta conta em todos os aparelhos em que você entrou, inclusive neste.</p>
       <button class="btn btn--ghost" type="button" data-logout-all>Sair de todos os aparelhos</button>
     </div>
+    <div class="card" data-delete-account-card>
+      <h2 class="card__title">Excluir conta</h2>
+      <p class="card__text">Apaga sua conta e o seu histórico de senhas. Se você estiver esperando em alguma fila, essa senha é cancelada. Não dá para desfazer.</p>
+      <button class="btn btn--ghost" type="button" data-delete-account>Excluir conta</button>
+      <form class="form" data-delete-account-form novalidate hidden>
+        <label class="field">
+          <span class="field__label">Para excluir a conta, confirme sua senha</span>
+          <input type="password" name="password" autocomplete="current-password" required>
+        </label>
+        <div class="delete-account__row">
+          <button class="btn btn--ghost" type="submit">Excluir definitivamente</button>
+          <button class="btn btn--text" type="button" data-delete-account-cancel>Cancelar</button>
+        </div>
+      </form>
+    </div>
   </section>
 
   <!-- ===================== ESTABELECIMENTO ===================== -->
@@ -462,6 +477,21 @@
         <h2 class="card__title">Sessões</h2>
         <p class="card__text">Encerra o acesso a esta conta em todos os aparelhos, inclusive nos guichês e neste. Cada um vai precisar entrar de novo.</p>
         <button class="btn btn--ghost" type="button" data-logout-all>Sair de todos os aparelhos</button>
+      </div>
+      <div class="card" data-delete-account-card>
+        <h2 class="card__title">Excluir conta</h2>
+        <p class="card__text">Apaga sua conta, o estabelecimento e todas as senhas dele, inclusive as de quem está na fila agora. Não dá para desfazer.</p>
+        <button class="btn btn--ghost" type="button" data-delete-account>Excluir conta</button>
+        <form class="form" data-delete-account-form novalidate hidden>
+          <label class="field">
+            <span class="field__label">Para excluir a conta, confirme sua senha</span>
+            <input type="password" name="password" autocomplete="current-password" required>
+          </label>
+          <div class="delete-account__row">
+            <button class="btn btn--ghost" type="submit">Excluir definitivamente</button>
+            <button class="btn btn--text" type="button" data-delete-account-cancel>Cancelar</button>
+          </div>
+        </form>
       </div>
     </div>
   </section>

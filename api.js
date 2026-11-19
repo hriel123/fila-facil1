@@ -35,6 +35,8 @@ const FF = (() => {
     "counters must be 1 to 20": "O número de guichês deve ficar entre 1 e 20.",
     "counter busy": "Um dos guichês que você quer tirar ainda está atendendo alguém. Finalize esse atendimento antes.",
     "email not configured": "A recuperação de senha por e-mail ainda não foi ativada.",
+    "password is required": "Digite sua senha para confirmar.",
+    "current password is incorrect": "Senha incorreta.",
     "invalid or expired reset link": "Este link expirou ou já foi usado. Peça um novo em \"Esqueci minha senha\".",
     "token and password are required": "Digite a nova senha.",
     network: "Sem conexão com o servidor. Verifique a internet e tente de novo.",
