@@ -94,68 +94,72 @@
 
       <div class="auth-card">
         <div class="tabs" role="tablist" aria-label="Entrar ou criar conta">
-          <button class="tab is-active" role="tab" type="button" id="tabBtnEntrar" data-auth-tab="entrar" aria-selected="true" aria-controls="formEntrar">Entrar</button>
-          <button class="tab" role="tab" type="button" id="tabBtnCriar" data-auth-tab="criar" aria-selected="false" aria-controls="formCriar" tabindex="-1">Criar conta</button>
+          <button class="tab is-active" role="tab" type="button" id="tabBtnEntrar" data-auth-tab="entrar" aria-selected="true" aria-controls="panelEntrar">Entrar</button>
+          <button class="tab" role="tab" type="button" id="tabBtnCriar" data-auth-tab="criar" aria-selected="false" aria-controls="panelCriar" tabindex="-1">Criar conta</button>
         </div>
 
-        <form class="form" id="formEntrar" role="tabpanel" aria-labelledby="tabBtnEntrar" novalidate>
-          <h1 class="auth-card__title">Bem-vindo de volta</h1>
-          <label class="field">
-            <span class="field__label">E-mail</span>
-            <input type="email" name="email" autocomplete="email" required>
-          </label>
-          <label class="field">
-            <span class="field__label">Senha da conta</span>
-            <span class="password-wrap"><input type="password" name="password" autocomplete="current-password" required><button type="button" class="password-toggle" data-show-password aria-label="Mostrar a senha"><svg class="olho" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg><svg class="olho-riscado" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/></svg></button></span>
-          </label>
-          <button type="button" class="link-btn form__forgot" data-auth-tab="esqueci">Esqueci minha senha</button>
-          <p class="form__error" role="alert" hidden></p>
-          <button class="btn btn--primary btn--lg btn--block" type="submit">Entrar</button>
-          <p class="form__switch">Ainda não tem conta? <button type="button" class="link-btn" data-auth-tab="criar">Criar conta</button></p>
-        </form>
+        <div id="panelEntrar" role="tabpanel" aria-labelledby="tabBtnEntrar">
+          <form class="form" id="formEntrar" novalidate>
+            <h1 class="auth-card__title">Bem-vindo de volta</h1>
+            <label class="field">
+              <span class="field__label">E-mail</span>
+              <input type="email" name="email" autocomplete="email" required>
+            </label>
+            <label class="field">
+              <span class="field__label">Senha da conta</span>
+              <span class="password-wrap"><input type="password" name="password" autocomplete="current-password" required><button type="button" class="password-toggle" data-show-password aria-label="Mostrar a senha"><svg class="olho" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg><svg class="olho-riscado" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/></svg></button></span>
+            </label>
+            <button type="button" class="link-btn form__forgot" data-auth-tab="esqueci">Esqueci minha senha</button>
+            <p class="form__error" role="alert" hidden></p>
+            <button class="btn btn--primary btn--lg btn--block" type="submit">Entrar</button>
+            <p class="form__switch">Ainda não tem conta? <button type="button" class="link-btn" data-auth-tab="criar">Criar conta</button></p>
+          </form>
+        </div>
 
-        <form class="form" id="formCriar" role="tabpanel" aria-labelledby="tabBtnCriar" novalidate hidden>
-          <h1 class="auth-card__title">Criar conta</h1>
-          <div class="role-pick" role="radiogroup" aria-label="Tipo de conta">
-            <label class="role-option">
-              <input type="radio" name="role" value="CUSTOMER" checked>
-              <span class="role-option__box">
-                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="7" y="2.5" width="10" height="19" rx="2.5" stroke="currentColor" stroke-width="1.7"/><path d="M11 18.5h2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
-                <strong>Sou cliente</strong>
-                <small>Pego senha pelo celular</small>
-              </span>
+        <div id="panelCriar" role="tabpanel" aria-labelledby="tabBtnCriar" hidden>
+          <form class="form" id="formCriar" novalidate>
+            <h1 class="auth-card__title">Criar conta</h1>
+            <div class="role-pick" role="radiogroup" aria-label="Tipo de conta">
+              <label class="role-option">
+                <input type="radio" name="role" value="CUSTOMER" checked>
+                <span class="role-option__box">
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="7" y="2.5" width="10" height="19" rx="2.5" stroke="currentColor" stroke-width="1.7"/><path d="M11 18.5h2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                  <strong>Sou cliente</strong>
+                  <small>Pego senha pelo celular</small>
+                </span>
+              </label>
+              <label class="role-option">
+                <input type="radio" name="role" value="OWNER">
+                <span class="role-option__box">
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 10.5V20h16v-9.5M3 10.5 5 4h14l2 6.5H3Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M10 20v-5h4v5" stroke="currentColor" stroke-width="1.7"/></svg>
+                  <strong>Tenho um negócio</strong>
+                  <small>Organizo a minha fila</small>
+                </span>
+              </label>
+            </div>
+            <label class="field">
+              <span class="field__label">Seu nome</span>
+              <input name="name" autocomplete="name" maxlength="80" required>
             </label>
-            <label class="role-option">
-              <input type="radio" name="role" value="OWNER">
-              <span class="role-option__box">
-                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 10.5V20h16v-9.5M3 10.5 5 4h14l2 6.5H3Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M10 20v-5h4v5" stroke="currentColor" stroke-width="1.7"/></svg>
-                <strong>Tenho um negócio</strong>
-                <small>Organizo a minha fila</small>
-              </span>
+            <label class="field" data-owner-only hidden>
+              <span class="field__label">Nome do estabelecimento</span>
+              <input name="businessName" maxlength="60" placeholder="Ex.: Barbearia do Zé">
             </label>
-          </div>
-          <label class="field">
-            <span class="field__label">Seu nome</span>
-            <input name="name" autocomplete="name" maxlength="80" required>
-          </label>
-          <label class="field" data-owner-only hidden>
-            <span class="field__label">Nome do estabelecimento</span>
-            <input name="businessName" maxlength="60" placeholder="Ex.: Barbearia do Zé">
-          </label>
-          <label class="field">
-            <span class="field__label">E-mail</span>
-            <input type="email" name="email" autocomplete="email" required>
-          </label>
-          <label class="field">
-            <span class="field__label">Crie uma senha para a conta</span>
-            <span class="password-wrap"><input type="password" name="password" autocomplete="new-password" minlength="6" required><button type="button" class="password-toggle" data-show-password aria-label="Mostrar a senha"><svg class="olho" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg><svg class="olho-riscado" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/></svg></button></span>
-            <small class="field__hint">Pelo menos 6 caracteres.</small>
-          </label>
-          <p class="form__error" role="alert" hidden></p>
-          <button class="btn btn--primary btn--lg btn--block" type="submit">Criar conta</button>
-          <p class="form__legal">Ao criar a conta, você concorda com a <a href="privacidade.html" class="link-accent" target="_blank" rel="noopener">política de privacidade</a>.</p>
-          <p class="form__switch">Já tem conta? <button type="button" class="link-btn" data-auth-tab="entrar">Entrar</button></p>
-        </form>
+            <label class="field">
+              <span class="field__label">E-mail</span>
+              <input type="email" name="email" autocomplete="email" required>
+            </label>
+            <label class="field">
+              <span class="field__label">Crie uma senha para a conta</span>
+              <span class="password-wrap"><input type="password" name="password" autocomplete="new-password" minlength="6" required><button type="button" class="password-toggle" data-show-password aria-label="Mostrar a senha"><svg class="olho" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg><svg class="olho-riscado" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/></svg></button></span>
+              <small class="field__hint">Pelo menos 6 caracteres.</small>
+            </label>
+            <p class="form__error" role="alert" hidden></p>
+            <button class="btn btn--primary btn--lg btn--block" type="submit">Criar conta</button>
+            <p class="form__legal">Ao criar a conta, você concorda com a <a href="privacidade.html" class="link-accent" target="_blank" rel="noopener">política de privacidade</a>.</p>
+            <p class="form__switch">Já tem conta? <button type="button" class="link-btn" data-auth-tab="entrar">Entrar</button></p>
+          </form>
+        </div>
 
         <form class="form" id="formEsqueci" novalidate hidden>
           <h1 class="auth-card__title">Recuperar acesso</h1>

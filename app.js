@@ -371,8 +371,8 @@
     });
     setTitle({ entrar: "Entrar", criar: "Criar conta", esqueci: "Esqueci minha senha", redefinir: "Nova senha" }[tab]);
     document.querySelector(".auth-card .tabs").hidden = tab !== "entrar" && tab !== "criar";
-    $("formEntrar").hidden = tab !== "entrar";
-    $("formCriar").hidden = tab !== "criar";
+    $("panelEntrar").hidden = tab !== "entrar";
+    $("panelCriar").hidden = tab !== "criar";
     $("formEsqueci").hidden = tab !== "esqueci";
     $("formRedefinir").hidden = tab !== "redefinir";
     $("demoCta").hidden = !!authFila || (tab !== "entrar" && tab !== "criar");
